@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Review {
+  id String @id @default(cuid())
+
+  rating Int
+
+  title String?
+
+  comment String
+
+  approved Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Wishlist {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, vehicleId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id String @id @default(cuid())
+
+  // Required
+  fullName String
+  email    String @unique
+  mobile   String @unique
+  password String
+
+  // Optional profile
+  gender String?
+  dob    DateTime?
+
+  occupation String?
+  city       String?
+  state      String?
+
+  budget        String?
+  preferredFuel String?
+  preferredBody String?
+
+  avatar String?
+
+  role Role @default(USER)
+
+  wishlist Wishlist[]
+  reviews  Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Variant {
+  id String @id @default(cuid())
+
+  name String
+
+  price Decimal @db.Decimal(10, 2)
+
+  fuel String
+
+  transmission String
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Feature {
+  id String @id @default(cuid())
+
+  name String
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleImage {
+  id String @id @default(cuid())
+
+  imageUrl String
+
+  isCover Boolean @default(false)
+
+  order Int @default(0)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Vehicle {
+  id String @id @default(cuid())
+
+  name String
+  slug String @unique
+
+  brand    String
+  category String
+  bodyType String
+
+  description String
+
+  basePrice Decimal @db.Decimal(10, 2)
+
+  mileage     String
+  cityMileage String?
+
+  fuelType String
+
+  engine String
+  power  String
+  torque String
+
+  transmission String
+
+  cylinders Int
+
+  seatingCapacity Int
+
+  fuelTank String
+
+  bootSpace String
+
+  groundClearance String
+
+  featured Boolean @default(false)
+
+  published Boolean @default(true)
+
+  images VehicleImage[]
+
+  variants Variant[]
+
+  features Feature[]
+
+  reviews Review[]
+
+  wishlists Wishlist[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
