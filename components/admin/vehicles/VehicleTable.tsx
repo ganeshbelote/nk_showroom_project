@@ -2,62 +2,50 @@
 
 import Image from 'next/image'
 import { Pencil, Trash2, Search, Plus } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 type Vehicle = {
-  id: number
-  image: string
+  id: string
   name: string
-  price: string
-  fuel: string
-  transmission: string
+  slug: string
+
+  basePrice: number
+
   featured: boolean
   published: boolean
-}
 
-const dummyCars: Vehicle[] = [
-  {
-    id: 1,
-    image: '/cars/brezza.webp',
-    name: 'Brezza',
-    price: '₹8.69 Lakh',
-    fuel: 'Petrol',
-    transmission: 'Automatic',
-    featured: true,
-    published: true
-  },
-  {
-    id: 2,
-    image: '/cars/fronx.webp',
-    name: 'Fronx',
-    price: '₹7.52 Lakh',
-    fuel: 'Petrol',
-    transmission: 'Manual',
-    featured: false,
-    published: true
-  },
-  {
-    id: 3,
-    image: '/cars/swift.webp',
-    name: 'Swift',
-    price: '₹6.49 Lakh',
-    fuel: 'Petrol',
-    transmission: 'Manual',
-    featured: false,
-    published: false
-  }
-]
+  transmission: string
+  fuelType: string
+
+  images: {
+    imageUrl: string
+    isCover: boolean
+  }[]
+}
 
 export default function VehicleTable () {
   const [search, setSearch] = useState('')
   const router = useRouter()
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
 
-  const vehicles = useMemo(() => {
-    return dummyCars.filter(car =>
-      car.name.toLowerCase().includes(search.toLowerCase())
-    )
-  }, [search])
+  const fetchVehicles = async () => {
+    try {
+      const res = await fetch('/api/vehicles')
+
+      const data = await res.json()
+
+      if (!res.ok) return
+
+      setVehicles(data.vehicles)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    fetchVehicles()
+  }, [])
 
   return (
     <section className='space-y-8'>
@@ -116,7 +104,10 @@ export default function VehicleTable () {
                 <td className='py-5'>
                   <div className='flex items-center gap-4'>
                     <Image
-                      src={vehicle.image}
+                      src={
+                        vehicle.images.find(img => img.isCover)?.imageUrl ||
+                        '/placeholder.png'
+                      }
                       alt={vehicle.name}
                       width={90}
                       height={60}
@@ -131,9 +122,9 @@ export default function VehicleTable () {
                   </div>
                 </td>
 
-                <td>{vehicle.price}</td>
+                <td>₹{Number(vehicle.basePrice).toLocaleString('en-IN')}</td>
 
-                <td>{vehicle.fuel}</td>
+                <td>{vehicle.fuelType}</td>
 
                 <td>{vehicle.transmission}</td>
 
@@ -184,7 +175,10 @@ export default function VehicleTable () {
           >
             <div className='flex gap-4'>
               <Image
-                src={vehicle.image}
+                src={
+                  vehicle.images.find(img => img.isCover)?.imageUrl ||
+                  '/placeholder.png'
+                }
                 alt={vehicle.name}
                 width={110}
                 height={75}
@@ -197,7 +191,7 @@ export default function VehicleTable () {
                 <p className='text-sm text-zinc-500'>#{vehicle.id}</p>
 
                 <p className='mt-2 text-lg font-bold text-white'>
-                  {vehicle.price}
+                  ₹{Number(vehicle.basePrice).toLocaleString('en-IN')}
                 </p>
               </div>
             </div>
@@ -206,7 +200,7 @@ export default function VehicleTable () {
               <div>
                 <p className='text-zinc-500'>Fuel</p>
 
-                <p className='text-white'>{vehicle.fuel}</p>
+                <p className='text-white'>{vehicle.fuelType}</p>
               </div>
 
               <div>

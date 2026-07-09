@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth'
+import { verifyToken } from './lib/jwt'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value
 
   const { pathname } = req.nextUrl
@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    const user = verifyToken(token)
+    const user = await verifyToken(token)
 
     // Logged in user visiting login/register
     if (isAuthPage) {

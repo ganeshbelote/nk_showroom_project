@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth'
+import { verifyToken } from '@/lib/jwt'
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token)
 
     const user = await prisma.user.findUnique({
       where: {

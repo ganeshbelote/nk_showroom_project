@@ -4,21 +4,142 @@ import { useState } from 'react'
 import { Plus, Trash2, Upload } from 'lucide-react'
 import ImageUploader from './ImageUploader'
 import VariantManager from './VariantManager'
+import { toast } from '@/components/Toast'
+
+export type VariantType = {
+  name: string
+  price: number
+  fuel: string
+  transmission: string
+}
+
+export type ImageType = {
+  imageUrl: string
+  publicId: string
+  isCover: boolean
+  order: number
+}
 
 export default function VehicleForm () {
   const [features, setFeatures] = useState<string[]>(['Power Steering', 'ABS'])
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    brand: '',
+    category: '',
+    bodyType: '',
+    description: '',
+
+    basePrice: '',
+
+    mileage: '',
+    cityMileage: '',
+
+    fuelType: '',
+
+    engine: '',
+    power: '',
+    torque: '',
+
+    transmission: '',
+
+    cylinders: '',
+    seatingCapacity: '',
+
+    fuelTank: '',
+
+    bootSpace: '',
+
+    groundClearance: '',
+
+    featured: false,
+    published: true,
+
+    features: [] as string[],
+    images: [] as ImageType[],
+    variants: [] as VariantType[]
+  })
 
   const [feature, setFeature] = useState('')
 
   const addFeature = () => {
     if (!feature.trim()) return
 
-    setFeatures(prev => [...prev, feature])
+    const updated = [...features, feature]
+
+    setFeatures(updated)
+
+    setFormData(prev => ({
+      ...prev,
+      features: updated
+    }))
+
     setFeature('')
   }
 
   const removeFeature = (index: number) => {
-    setFeatures(prev => prev.filter((_, i) => i !== index))
+    const updated = features.filter((_, i) => i !== index)
+
+    setFeatures(updated)
+
+    setFormData(prev => ({
+      ...prev,
+      features: updated
+    }))
+  }
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target
+
+    setFormData(prev => ({
+      ...prev,
+      [name]:
+        type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }))
+  }
+
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch('/api/vehicles', {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          ...formData,
+
+          basePrice: Number(formData.basePrice),
+
+          cylinders: Number(formData.cylinders),
+
+          seatingCapacity: Number(formData.seatingCapacity)
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        if (data.errors) {
+          toast.error('Please check all required fields.')
+        } else {
+          toast.error(data.message || 'Failed to add vehicle.')
+        }
+
+        return
+      }
+
+      toast.success('Vehicle added successfully.')
+    } catch (error) {
+      console.error(error)
+
+      toast.error('Something went wrong. Please try again.')
+    }
   }
 
   return (
@@ -34,12 +155,50 @@ export default function VehicleForm () {
       {/* BASIC */}
 
       <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
-        <Input label='Vehicle Name' />
-        <Input label='Slug' />
-        <Input label='Brand' />
-        <Input label='Category' />
-        <Input label='Price' />
-        <Input label='Body Type' />
+        <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
+          <Input
+            label='Vehicle Name'
+            name='name'
+            value={formData.name}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Slug'
+            name='slug'
+            value={formData.slug}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Brand'
+            name='brand'
+            value={formData.brand}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Category'
+            name='category'
+            value={formData.category}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Price'
+            name='basePrice'
+            type='number'
+            value={formData.basePrice}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Body Type'
+            name='bodyType'
+            value={formData.bodyType}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
       <div>
@@ -47,6 +206,9 @@ export default function VehicleForm () {
 
         <textarea
           rows={5}
+          name='description'
+          value={formData.description}
+          onChange={handleChange}
           className='w-full rounded-xl border border-zinc-700 bg-black p-4 text-white outline-none transition focus:border-indigo-800'
         />
       </div>
@@ -59,18 +221,91 @@ export default function VehicleForm () {
         </h2>
 
         <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3'>
-          <Input label='ARAI Mileage' />
-          <Input label='City Mileage' />
-          <Input label='Fuel Type' />
-          <Input label='Engine' />
-          <Input label='Power' />
-          <Input label='Torque' />
-          <Input label='Transmission' />
-          <Input label='Cylinder' />
-          <Input label='Seats' />
-          <Input label='Fuel Tank' />
-          <Input label='Boot Space' />
-          <Input label='Ground Clearance' />
+          <Input
+            label='ARAI Mileage'
+            name='mileage'
+            value={formData.mileage}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='City Mileage'
+            name='cityMileage'
+            value={formData.cityMileage}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Fuel Type'
+            name='fuelType'
+            value={formData.fuelType}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Engine'
+            name='engine'
+            value={formData.engine}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Power'
+            name='power'
+            value={formData.power}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Torque'
+            name='torque'
+            value={formData.torque}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Transmission'
+            name='transmission'
+            value={formData.transmission}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Cylinder'
+            name='cylinders'
+            type='number'
+            value={formData.cylinders}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Seats'
+            name='seatingCapacity'
+            type='number'
+            value={formData.seatingCapacity}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Fuel Tank'
+            name='fuelTank'
+            value={formData.fuelTank}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Boot Space'
+            name='bootSpace'
+            value={formData.bootSpace}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='Ground Clearance'
+            name='groundClearance'
+            value={formData.groundClearance}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
@@ -122,32 +357,37 @@ export default function VehicleForm () {
           Vehicle Gallery
         </h2>
 
-        <ImageUploader />
+        <ImageUploader
+          images={formData.images}
+          setImages={images =>
+            setFormData(prev => ({
+              ...prev,
+              images
+            }))
+          }
+        />
 
         <div className='mt-8'>
-          <VariantManager />
-        </div>
-
-        <div className='mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-          {[1, 2, 3].map(i => (
-            <label
-              key={i}
-              className='flex h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-700 transition hover:border-indigo-800'
-            >
-              <Upload size={34} className='text-zinc-500' />
-
-              <span className='mt-3 text-sm text-zinc-400'>Upload Image</span>
-
-              <input type='file' hidden />
-            </label>
-          ))}
+          <VariantManager
+            variants={formData.variants}
+            setVariants={variants =>
+              setFormData(prev => ({
+                ...prev,
+                variants
+              }))
+            }
+          />
         </div>
       </div>
 
       {/* SAVE */}
 
       <div className='flex justify-center sm:justify-end'>
-        <button className='h-12 w-full rounded-xl bg-[#2B3494] px-8 font-semibold text-white transition hover:bg-indigo-800 sm:w-auto'>
+        <button
+          className='h-12 w-full rounded-xl bg-[#2B3494] px-8 font-semibold text-white transition hover:bg-indigo-800 sm:w-auto'
+          type='button'
+          onClick={handleSubmit}
+        >
           Save Vehicle
         </button>
       </div>
@@ -155,14 +395,34 @@ export default function VehicleForm () {
   )
 }
 
-function Input ({ label }: { label: string }) {
+function Input ({
+  label,
+  name,
+  value,
+  onChange,
+  type = 'text'
+}: {
+  label: string
+  name: string
+  value: string
+  type?: string
+  onChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void
+}) {
   return (
     <div>
-      <label className='mb-2 block text-sm font-medium text-zinc-300'>
-        {label}
-      </label>
+      <label className='mb-2 block text-sm text-zinc-300'>{label}</label>
 
-      <input className='h-12 w-full rounded-xl border border-zinc-700 bg-black px-4 text-white outline-none transition focus:border-indigo-800' />
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        className='h-12 w-full rounded-xl border border-zinc-700 bg-black px-4 text-white outline-none transition focus:border-indigo-800'
+      />
     </div>
   )
 }

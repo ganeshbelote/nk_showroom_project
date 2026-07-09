@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import Sidebar from '@/components/admin/Sidebar'
 import Topbar from '@/components/admin/Topbar'
+import { Toast } from '../Toast'
 
 export default function AdminLayout({
   children
@@ -35,6 +36,8 @@ export default function AdminLayout({
       </main>
 
     </div>
+
+    <Toast />
 
   </div>
 )

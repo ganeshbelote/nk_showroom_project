@@ -3,9 +3,9 @@ import { z } from 'zod'
 
 import { prisma } from '@/lib/prisma'
 import {
-  comparePassword,
-  generateToken
+  comparePassword
 } from '@/lib/auth'
+import { generateToken } from '@/lib/jwt'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const token = generateToken({
+    const token = await generateToken({
       id: user.id,
       role: user.role
     })

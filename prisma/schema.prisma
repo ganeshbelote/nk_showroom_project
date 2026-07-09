@@ -118,6 +118,8 @@ model VehicleImage {
 
   imageUrl String
 
+  publicId String
+
   isCover Boolean @default(false)
 
   order Int @default(0)
