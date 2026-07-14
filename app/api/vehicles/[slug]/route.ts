@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import cloudinary from '@/lib/cloudinary'
 
-export async function GET(
+export async function GET (
   req: NextRequest,
   {
     params
@@ -91,7 +91,7 @@ export async function GET(
 
 const variantSchema = z.object({
   name: z.string(),
-  price: z.number(),
+  price: z.coerce.number(),
   fuel: z.string(),
   transmission: z.string()
 })
@@ -100,7 +100,7 @@ const imageSchema = z.object({
   imageUrl: z.string().url(),
   publicId: z.string(),
   isCover: z.boolean().optional(),
-  order: z.number().optional()
+  order: z.coerce.number().optional()
 })
 
 const vehicleSchema = z.object({
@@ -114,7 +114,7 @@ const vehicleSchema = z.object({
 
   description: z.string(),
 
-  basePrice: z.number(),
+  basePrice: z.coerce.number(),
 
   mileage: z.string(),
 
@@ -130,9 +130,9 @@ const vehicleSchema = z.object({
 
   transmission: z.string(),
 
-  cylinders: z.number(),
+  cylinders: z.coerce.number(),
 
-  seatingCapacity: z.number(),
+  seatingCapacity: z.coerce.number(),
 
   fuelTank: z.string(),
 
@@ -151,7 +151,7 @@ const vehicleSchema = z.object({
   images: z.array(imageSchema)
 })
 
-export async function PATCH(
+export async function PATCH (
   req: NextRequest,
   {
     params
@@ -167,10 +167,12 @@ export async function PATCH(
     const result = vehicleSchema.safeParse(body)
 
     if (!result.success) {
+      console.log(result.error.format())
+
       return NextResponse.json(
         {
           success: false,
-          errors: result.error.flatten()
+          errors: result.error.format()
         },
         {
           status: 400
@@ -220,6 +222,8 @@ export async function PATCH(
           vehicleId: exists.id
         }
       })
+
+      console.log(data.images)
 
       return tx.vehicle.update({
         where: {
@@ -271,8 +275,7 @@ export async function PATCH(
   }
 }
 
-
-export async function DELETE(
+export async function DELETE (
   req: NextRequest,
   {
     params

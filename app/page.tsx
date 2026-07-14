@@ -9,10 +9,45 @@ import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 import VehicleShowcase from '@/components/VehicleShowcase'
 import WhyChooseMaruti from '@/components/WhyChooseMaruti'
-import { useState } from 'react'
+import { apiFetch } from '@/lib/apiFetch'
+import { useEffect, useState } from 'react'
+
+type Vehicle = {
+  id: string
+  name: string
+  slug: string
+  basePrice: number
+  featured: boolean
+  published: boolean
+  transmission: string
+  fuelType: string
+  images: {
+    imageUrl: string
+    isCover: boolean
+  }[]
+}
+
+type VehiclesResponse = {
+  success: boolean
+  vehicles: Vehicle[]
+}
 
 export default function Home ({}) {
   const [showPopup, setShowPopup] = useState(false)
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const data = await apiFetch<VehiclesResponse>('/api/vehicles')
+        setVehicles(data.vehicles)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    loadVehicles()
+  }, [])
 
   return (
     <div className='relative w-full'>
@@ -29,11 +64,11 @@ export default function Home ({}) {
           <Popup showPopup={showPopup} setShowPopup={setShowPopup} />
         </div>
       )}
-      <VehicleShowcase />
+      <VehicleShowcase vehicles={vehicles} />
       <WhyChooseMaruti />
       <ConsultantSection />
       <TestimonialsCarousel />
-      <Footer/>
+      <Footer />
     </div>
   )
 }

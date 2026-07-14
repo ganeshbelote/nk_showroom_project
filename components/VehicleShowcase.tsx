@@ -1,34 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import ColoredBtn from './ColoredBtn'
+import FullPageLoader from './FullPageLoader'
+import { useRouter } from 'next/navigation'
 
-const vehicles = [
-  {
-    name: 'GRAND VITARA',
-    price: '₹11.42L - ₹20.68L',
-    image:
-      'https://auto.mahindra.com/on/demandware.static/-/Sites-mahindra-product-catalog/default/dwe61fbdd2/images/X7XO/xlarge/AX7L_624x296_RubyVelvet.png'
-  },
-  {
-    name: 'BREZZA',
-    price: '₹8.69L - ₹14.14L',
-    image:
-      'https://auto.mahindra.com/on/demandware.static/-/Sites-mahindra-product-catalog/default/dw95b25431/images/TH5D/xlarge/Thar_Roxx_624x296_HP.png'
-  },
-  {
-    name: 'FRONX',
-    price: '₹7.54L - ₹13.04L',
-    image:
-      'https://auto.mahindra.com/on/demandware.static/-/Sites-mahindra-product-catalog/default/dwaebe6977/images/X3XO/xlarge/S220_624x296.png'
-  }
-]
+export type ShowcaseVehicle = {
+  id: string
+  name: string
+  slug: string
+  basePrice: number
 
-export default function VehicleShowcase () {
+  images: {
+    imageUrl: string
+    isCover: boolean
+  }[]
+}
+
+type Props = {
+  vehicles: ShowcaseVehicle[]
+}
+
+export default function VehicleShowcase ({ vehicles }: Props) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
   const [active, setActive] = useState(0)
   const [direction, setDirection] = useState(1)
+
+  useEffect(() => {
+    if (vehicles != null) {
+      setLoading(false)
+    }
+  }, [vehicles])
 
   const prev = active === 0 ? vehicles.length - 1 : active - 1
 
@@ -44,6 +49,14 @@ export default function VehicleShowcase () {
     setDirection(-1)
 
     setActive(prev => (prev === 0 ? vehicles.length - 1 : prev - 1))
+  }
+
+  if (loading) {
+    return <FullPageLoader />
+  }
+
+  if (vehicles.length === 0) {
+    return null
   }
 
   return (
@@ -65,7 +78,10 @@ export default function VehicleShowcase () {
             animate={{ x: 0 }}
           >
             <img
-              src={vehicles[prev].image}
+              src={
+                vehicles[prev].images.find(img => img.isCover)?.imageUrl ??
+                '/placeholder.png'
+              }
               alt=''
               className='w-full object-contain'
             />
@@ -77,7 +93,10 @@ export default function VehicleShowcase () {
             animate={{ x: 0 }}
           >
             <img
-              src={vehicles[next].image}
+              src={
+                vehicles[next].images.find(img => img.isCover)?.imageUrl ??
+                '/placeholder.png'
+              }
               alt=''
               className='w-full object-contain'
             />
@@ -87,8 +106,10 @@ export default function VehicleShowcase () {
           <div className='absolute inset-0 flex flex-col items-center justify-center'>
             <AnimatePresence mode='wait' custom={direction}>
               <motion.img
-                key={vehicles[active].image}
-                src={vehicles[active].image}
+                src={
+                  vehicles[active].images.find(img => img.isCover)?.imageUrl ??
+                  '/placeholder.png'
+                }
                 alt={vehicles[active].name}
                 custom={direction}
                 variants={{
@@ -133,13 +154,13 @@ export default function VehicleShowcase () {
                   <p className='text-sm text-zinc-400'>Ex showroom price</p>
 
                   <p className='text-xl font-semibold text-white'>
-                    {vehicles[active].price}
+                    ₹{vehicles[active].basePrice.toLocaleString('en-IN')}
                   </p>
                 </div>
               </div>
 
               <div className='flex gap-4'>
-                <ColoredBtn Content='Explore →' Border={true} Animated={true} />
+                <ColoredBtn onClick={()=>router.push(`/car/${vehicles[active].slug}`)} Content='Explore →' Border={true} Animated={true} />
               </div>
             </div>
           </div>

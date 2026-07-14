@@ -2,8 +2,10 @@
 
 import Image from 'next/image'
 import { Pencil, Trash2, Search, Plus } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/components/Toast'
+import VehicleEditor from './VehicleEditor'
 
 type Vehicle = {
   id: string
@@ -28,6 +30,35 @@ export default function VehicleTable () {
   const [search, setSearch] = useState('')
   const router = useRouter()
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [editingSlug, setEditingSlug] = useState<string | null>(null)
+  const [loadingDelete, setLoadingDelete] = useState<string | null>(null)
+
+  const deleteVehicle = async (slug: string) => {
+    if (!confirm('Delete this vehicle?')) return
+
+    try {
+      setLoadingDelete(slug)
+
+      const res = await fetch(`/api/vehicles/${slug}`, {
+        method: 'DELETE'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.message)
+        return
+      }
+
+      toast.success(data.message)
+
+      setVehicles(prev => prev.filter(vehicle => vehicle.slug !== slug))
+    } catch {
+      toast.error('Something went wrong')
+    } finally {
+      setLoadingDelete(null)
+    }
+  }
 
   const fetchVehicles = async () => {
     try {
@@ -97,69 +128,93 @@ export default function VehicleTable () {
 
           <tbody>
             {vehicles.map(vehicle => (
-              <tr
-                key={vehicle.id}
-                className='border-b border-zinc-800 transition hover:bg-zinc-950'
-              >
-                <td className='py-5'>
-                  <div className='flex items-center gap-4'>
-                    <Image
-                      src={
-                        vehicle.images.find(img => img.isCover)?.imageUrl ||
-                        '/placeholder.png'
-                      }
-                      alt={vehicle.name}
-                      width={90}
-                      height={60}
-                      className='rounded-xl'
-                    />
+              <Fragment key={vehicle.id}>
+                <tr
+                  key={vehicle.id}
+                  className='border-b border-zinc-800 transition hover:bg-zinc-950'
+                >
+                  <td className='py-5'>
+                    <div className='flex items-center gap-4'>
+                      <Image
+                        src={
+                          vehicle.images.find(img => img.isCover)?.imageUrl ||
+                          '/placeholder.png'
+                        }
+                        alt={vehicle.name}
+                        width={90}
+                        height={60}
+                        className='rounded-xl'
+                      />
 
-                    <div>
-                      <p className='font-semibold text-white'>{vehicle.name}</p>
+                      <div>
+                        <p className='font-semibold text-white'>
+                          {vehicle.name}
+                        </p>
 
-                      <p className='text-sm text-zinc-500'>#{vehicle.id}</p>
+                        <p className='text-sm text-zinc-500'>#{vehicle.id}</p>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                <td>₹{Number(vehicle.basePrice).toLocaleString('en-IN')}</td>
+                  <td>₹{Number(vehicle.basePrice).toLocaleString('en-IN')}</td>
 
-                <td>{vehicle.fuelType}</td>
+                  <td>{vehicle.fuelType}</td>
 
-                <td>{vehicle.transmission}</td>
+                  <td>{vehicle.transmission}</td>
 
-                <td>
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm text-white ${
-                      vehicle.featured ? 'bg-[#2B3494]' : 'bg-zinc-700'
-                    }`}
-                  >
-                    {vehicle.featured ? 'Featured' : 'Normal'}
-                  </span>
-                </td>
+                  <td>
+                    <span
+                      className={`rounded-full px-3 py-1 text-sm text-white ${
+                        vehicle.featured ? 'bg-[#2B3494]' : 'bg-zinc-700'
+                      }`}
+                    >
+                      {vehicle.featured ? 'Featured' : 'Normal'}
+                    </span>
+                  </td>
 
-                <td>
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm text-white ${
-                      vehicle.published ? 'bg-green-600' : 'bg-red-600'
-                    }`}
-                  >
-                    {vehicle.published ? 'Published' : 'Draft'}
-                  </span>
-                </td>
+                  <td>
+                    <span
+                      className={`rounded-full px-3 py-1 text-sm text-white ${
+                        vehicle.published ? 'bg-green-600' : 'bg-red-600'
+                      }`}
+                    >
+                      {vehicle.published ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
 
-                <td>
-                  <div className='flex gap-2'>
-                    <button className='rounded-lg bg-zinc-800 p-3 hover:bg-[#2B3494]'>
-                      <Pencil size={18} className='text-white' />
-                    </button>
+                  <td>
+                    <div className='flex gap-2'>
+                      <button
+                        className='rounded-lg bg-zinc-800 p-3 hover:bg-[#2B3494]'
+                        onClick={() =>
+                          setEditingSlug(
+                            editingSlug === vehicle.slug ? null : vehicle.slug
+                          )
+                        }
+                      >
+                        <Pencil size={18} className='text-white' />
+                      </button>
 
-                    <button className='rounded-lg bg-zinc-800 p-3 hover:bg-red-600'>
-                      <Trash2 size={18} className='text-white' />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                      <button className='rounded-lg bg-zinc-800 p-3 hover:bg-red-600'>
+                        <Trash2 size={18} className='text-white' />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {editingSlug === vehicle.slug && (
+                  <tr>
+                    <td colSpan={7}>
+                      <VehicleEditor
+                        slug={vehicle.slug}
+                        onSaved={() => {
+                          fetchVehicles()
+                          setEditingSlug(null)
+                        }}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -169,75 +224,100 @@ export default function VehicleTable () {
 
       <div className='grid gap-5 lg:hidden'>
         {vehicles.map(vehicle => (
-          <div
-            key={vehicle.id}
-            className='rounded-2xl border border-zinc-800 bg-zinc-950 p-4'
-          >
-            <div className='flex gap-4'>
-              <Image
-                src={
-                  vehicle.images.find(img => img.isCover)?.imageUrl ||
-                  '/placeholder.png'
-                }
-                alt={vehicle.name}
-                width={110}
-                height={75}
-                className='rounded-xl'
-              />
+          <Fragment key={vehicle.id}>
+            <div
+              key={vehicle.id}
+              className='rounded-2xl border border-zinc-800 bg-zinc-950 p-4'
+            >
+              <div className='flex gap-4'>
+                <Image
+                  src={
+                    vehicle.images.find(img => img.isCover)?.imageUrl ||
+                    '/placeholder.png'
+                  }
+                  alt={vehicle.name}
+                  width={110}
+                  height={75}
+                  className='rounded-xl'
+                />
 
-              <div className='flex-1'>
-                <h3 className='font-semibold text-white'>{vehicle.name}</h3>
+                <div className='flex-1'>
+                  <h3 className='font-semibold text-white'>{vehicle.name}</h3>
 
-                <p className='text-sm text-zinc-500'>#{vehicle.id}</p>
+                  <p className='text-sm text-zinc-500'>#{vehicle.id}</p>
 
-                <p className='mt-2 text-lg font-bold text-white'>
-                  ₹{Number(vehicle.basePrice).toLocaleString('en-IN')}
-                </p>
+                  <p className='mt-2 text-lg font-bold text-white'>
+                    ₹{Number(vehicle.basePrice).toLocaleString('en-IN')}
+                  </p>
+                </div>
+              </div>
+
+              <div className='mt-5 grid grid-cols-2 gap-4 text-sm'>
+                <div>
+                  <p className='text-zinc-500'>Fuel</p>
+
+                  <p className='text-white'>{vehicle.fuelType}</p>
+                </div>
+
+                <div>
+                  <p className='text-zinc-500'>Transmission</p>
+
+                  <p className='text-white'>{vehicle.transmission}</p>
+                </div>
+              </div>
+
+              <div className='mt-5 flex flex-wrap gap-2'>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs text-white ${
+                    vehicle.featured ? 'bg-[#2B3494]' : 'bg-zinc-700'
+                  }`}
+                >
+                  {vehicle.featured ? 'Featured' : 'Normal'}
+                </span>
+
+                <span
+                  className={`rounded-full px-3 py-1 text-xs text-white ${
+                    vehicle.published ? 'bg-green-600' : 'bg-red-600'
+                  }`}
+                >
+                  {vehicle.published ? 'Published' : 'Draft'}
+                </span>
+              </div>
+
+              <div className='mt-5 flex justify-end gap-3'>
+                <button
+                  onClick={() =>
+                    setEditingSlug(
+                      editingSlug === vehicle.slug ? null : vehicle.slug
+                    )
+                  }
+                  className='rounded-lg bg-zinc-800 p-3 hover:bg-[#2B3494]'
+                >
+                  <Pencil size={18} className='text-white' />
+                </button>
+
+                <button
+                  onClick={() => deleteVehicle(vehicle.slug)}
+                  className='rounded-lg bg-zinc-800 p-3 hover:bg-red-600'
+                >
+                  <Trash2 size={18} className='text-white' />
+                </button>
               </div>
             </div>
-
-            <div className='mt-5 grid grid-cols-2 gap-4 text-sm'>
+            {editingSlug === vehicle.slug && (
               <div>
-                <p className='text-zinc-500'>Fuel</p>
-
-                <p className='text-white'>{vehicle.fuelType}</p>
+                <div>
+                  <VehicleEditor
+                    slug={vehicle.slug}
+                    onSaved={() => {
+                      fetchVehicles()
+                      setEditingSlug(null)
+                    }}
+                  />
+                </div>
               </div>
-
-              <div>
-                <p className='text-zinc-500'>Transmission</p>
-
-                <p className='text-white'>{vehicle.transmission}</p>
-              </div>
-            </div>
-
-            <div className='mt-5 flex flex-wrap gap-2'>
-              <span
-                className={`rounded-full px-3 py-1 text-xs text-white ${
-                  vehicle.featured ? 'bg-[#2B3494]' : 'bg-zinc-700'
-                }`}
-              >
-                {vehicle.featured ? 'Featured' : 'Normal'}
-              </span>
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs text-white ${
-                  vehicle.published ? 'bg-green-600' : 'bg-red-600'
-                }`}
-              >
-                {vehicle.published ? 'Published' : 'Draft'}
-              </span>
-            </div>
-
-            <div className='mt-5 flex justify-end gap-3'>
-              <button className='rounded-lg bg-zinc-800 p-3 hover:bg-[#2B3494]'>
-                <Pencil size={18} className='text-white' />
-              </button>
-
-              <button className='rounded-lg bg-zinc-800 p-3 hover:bg-red-600'>
-                <Trash2 size={18} className='text-white' />
-              </button>
-            </div>
-          </div>
+            )}
+          </Fragment>
         ))}
       </div>
     </section>
