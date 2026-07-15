@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Inter, Oswald, Geist } from 'next/font/google'
 import { cn } from "@/lib/utils";
+import { Toast } from '@/components/Toast'
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -28,7 +29,10 @@ export default function RootLayout ({
 }>) {
   return (
     <html lang='en' className={cn("h-full", "antialiased", inter.variable, oswald.variable, "font-sans", geist.variable)}>
-      <body className='min-h-full w-screen overflow-x-hidden' cz-shortcut-listen="true">{children}</body>
+      <body className='min-h-full w-screen overflow-x-hidden' cz-shortcut-listen="true">
+        {children}
+        <Toast />
+      </body>
     </html>
   )
 }

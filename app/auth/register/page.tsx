@@ -15,6 +15,7 @@ import {
   Calendar
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/components/Toast'
 
 const carModels = [
   'Brezza',
@@ -71,7 +72,7 @@ export default function RegisterPage () {
 
   const handleSubmit = async () => {
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match')
+      toast.error('Passwords do not match')
       return
     }
 
@@ -112,7 +113,7 @@ export default function RegisterPage () {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data.message || 'Registration failed')
+        toast.error(data.message || 'Registration failed')
         return
       }
 
@@ -123,7 +124,7 @@ export default function RegisterPage () {
       }
     } catch (err) {
       console.error(err)
-      alert('Something went wrong')
+      toast.error('Something went wrong')
     } finally {
       setLoading(false)
     }

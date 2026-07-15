@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { ChevronDown, Circle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface Variant {
   name: string
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function VariantPricing ({ variants }: Props) {
+  const router = useRouter()
   const [fuel, setFuel] = useState('All')
   const [transmission, setTransmission] = useState('All')
 
@@ -127,7 +129,10 @@ export default function VariantPricing ({ variants }: Props) {
               <p className='mt-1 text-sm text-indigo-800'>Get On-Road Price</p>
             </div>
 
-            <button className='rounded-xl bg-[#2B3494] px-8 py-3 font-semibold text-white transition hover:bg-indigo-800'>
+            <button
+              className='rounded-xl bg-[#2B3494] px-8 py-3 font-semibold text-white transition hover:bg-indigo-800'
+              onClick={() => router.push('/dealer')}
+            >
               Book Now
             </button>
           </div>

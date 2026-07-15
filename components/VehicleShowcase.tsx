@@ -30,7 +30,7 @@ export default function VehicleShowcase ({ vehicles }: Props) {
   const [direction, setDirection] = useState(1)
 
   useEffect(() => {
-    if (vehicles != null) {
+    if (vehicles.length > 0) {
       setLoading(false)
     }
   }, [vehicles])

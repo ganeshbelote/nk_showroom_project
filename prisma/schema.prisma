@@ -183,3 +183,57 @@ model Vehicle {
 
   updatedAt DateTime @updatedAt
 }
+
+// ========== NEW MODELS ==========
+
+model CarouselSlide {
+  id String @id @default(cuid())
+
+  title    String
+  subtitle String
+  price    String
+  button   String
+  image    String
+
+  order Int @default(0)
+
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id String @id @default(cuid())
+
+  key   String @unique
+  value String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Visitor {
+  id String @id @default(cuid())
+
+  name        String
+  phone       String
+  email       String
+  interested  String
+  message     String?
+  status      String @default("New") // New, Contacted, Visited, Closed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

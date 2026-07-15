@@ -3,8 +3,18 @@
 import { motion } from 'framer-motion'
 import { Star, ShieldCheck, Users } from 'lucide-react'
 import ColoredBtn from './ColoredBtn'
+import { useRouter } from 'next/navigation'
 
 export default function ConsultantSection () {
+  const router = useRouter()
+
+  const handleWhatsApp = () => {
+  window.open(
+    "https://wa.me/919876543210?text=Hi%20I%20want%20to%20know%20more%20about%20your%20cars.",
+    "_blank"
+  )
+}
+
   return (
     <section className='bg-black py-12'>
       <div className='mx-auto max-w-7xl px-6'>
@@ -89,13 +99,20 @@ export default function ConsultantSection () {
 
               <div className='mt-10 flex flex-wrap gap-4'>
                 <ColoredBtn
+                  onClick={() => router.push('/dealer')}
                   Content='Book Test Drive'
                   Border={true}
                   Animated={true}
                   Color='blue'
                 />
 
-                <ColoredBtn Content='WhatsApp' Border={true} Animated={true} Color='green'/>
+                <ColoredBtn
+                  onClick={handleWhatsApp}
+                  Content='WhatsApp'
+                  Border={true}
+                  Animated={true}
+                  Color='green'
+                />
               </div>
             </motion.div>
           </div>

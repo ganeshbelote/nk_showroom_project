@@ -74,20 +74,6 @@ export default function AccountPage () {
       icon: User,
       href: '/account/profile',
       color: 'text-indigo-800'
-    },
-    {
-      title: 'Recently Viewed',
-      value: 12,
-      icon: Eye,
-      href: '/cars',
-      color: 'text-green-500'
-    },
-    {
-      title: 'Test Drives',
-      value: 2,
-      icon: CarFront,
-      href: '#',
-      color: 'text-yellow-500'
     }
   ]
 

@@ -8,34 +8,29 @@ interface Props {
   slides: CarouselItem[]
   selected: number
   setSelected: Dispatch<SetStateAction<number>>
-  setSlides: Dispatch<SetStateAction<CarouselItem[]>>
+  onDelete: (id: string) => Promise<void>
 }
 
 export default function CarouselList({
   slides,
   selected,
   setSelected,
-  setSlides,
+  onDelete,
 }: Props) {
-  const deleteSlide = (index: number) => {
-    if (slides.length === 1) return
-
-    setSlides(prev => prev.filter((_, i) => i !== index))
-
-    if (selected >= slides.length - 1) {
-      setSelected(Math.max(0, slides.length - 2))
-    }
+  if (slides.length === 0) {
+    return (
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-4 sm:p-6">
+        <h2 className="mb-6 text-xl font-semibold text-white">Slides</h2>
+        <p className="text-zinc-500 text-center py-8">No slides yet. Add one!</p>
+      </div>
+    )
   }
 
   return (
     <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-4 sm:p-6">
-
-      <h2 className="mb-6 text-xl font-semibold text-white">
-        Slides
-      </h2>
+      <h2 className="mb-6 text-xl font-semibold text-white">Slides</h2>
 
       <div className="space-y-4">
-
         {slides.map((slide, index) => (
           <div
             key={slide.id}
@@ -47,7 +42,6 @@ export default function CarouselList({
             }`}
           >
             <div className="flex items-center gap-3 p-3">
-
               <GripVertical
                 size={18}
                 className="hidden shrink-0 text-zinc-500 sm:block"
@@ -60,33 +54,27 @@ export default function CarouselList({
               />
 
               <div className="min-w-0 flex-1 overflow-hidden">
-
                 <h3 className="truncate text-sm font-semibold text-white sm:text-base">
                   {slide.title}
                 </h3>
-
                 <p className="mt-1 truncate text-xs text-zinc-400 sm:text-sm">
                   {slide.price}
                 </p>
-
               </div>
 
               <button
                 onClick={e => {
                   e.stopPropagation()
-                  deleteSlide(index)
+                  onDelete(slide.id)
                 }}
                 className="rounded-lg p-2 text-red-500 transition hover:bg-red-500/10"
               >
                 <Trash2 size={18} />
               </button>
-
             </div>
           </div>
         ))}
-
       </div>
-
     </div>
   )
 }

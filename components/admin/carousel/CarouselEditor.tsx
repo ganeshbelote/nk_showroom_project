@@ -1,46 +1,34 @@
 'use client'
 
-import { Dispatch, SetStateAction } from 'react'
+import { useState } from 'react'
 import ImageUploader from './ImageUploader'
 import { CarouselItem } from '@/app/admin/carousel/page'
 
 interface Props {
   slides: CarouselItem[]
   selected: number
-  setSlides: Dispatch<SetStateAction<CarouselItem[]>>
+  onUpdate: (id: string, updates: Partial<CarouselItem>) => Promise<void>
 }
 
 export default function CarouselEditor({
   slides,
   selected,
-  setSlides,
+  onUpdate,
 }: Props) {
   const slide = slides[selected]
+  const [saving, setSaving] = useState(false)
 
   if (!slide) return null
 
   const update = (key: keyof CarouselItem, value: string) => {
-    setSlides(prev =>
-      prev.map((item, i) =>
-        i === selected
-          ? {
-              ...item,
-              [key]: value,
-            }
-          : item
-      )
-    )
+    onUpdate(slide.id, { [key]: value })
   }
 
   return (
     <div className="min-w-0 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950 p-4 sm:p-6 lg:p-8">
-
-      <h2 className="mb-8 text-2xl font-semibold text-white">
-        Edit Slide
-      </h2>
+      <h2 className="mb-8 text-2xl font-semibold text-white">Edit Slide</h2>
 
       <div className="space-y-5">
-
         <Input
           label="Title"
           value={slide.title}
@@ -64,7 +52,6 @@ export default function CarouselEditor({
           value={slide.button}
           onChange={v => update('button', v)}
         />
-
       </div>
 
       <div className="mt-10">
@@ -75,13 +62,11 @@ export default function CarouselEditor({
       </div>
 
       <div className="mt-10">
-
         <h3 className="mb-5 text-lg font-semibold text-white sm:text-xl">
           Live Preview
         </h3>
 
         <div className="relative overflow-hidden rounded-3xl border border-zinc-800">
-
           <img
             src={slide.image}
             alt=""
@@ -91,7 +76,6 @@ export default function CarouselEditor({
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
 
           <div className="absolute left-4 top-1/2 max-w-[85%] -translate-y-1/2 sm:left-8 lg:left-10">
-
             <p className="text-sm text-zinc-300 sm:text-base">
               {slide.subtitle}
             </p>
@@ -107,13 +91,9 @@ export default function CarouselEditor({
             <button className="mt-5 rounded-xl bg-[#2B3494] px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-800 sm:px-6 sm:py-3">
               {slide.button}
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   )
 }
@@ -127,17 +107,12 @@ interface InputProps {
 function Input({ label, value, onChange }: InputProps) {
   return (
     <div>
-
-      <label className="mb-2 block text-zinc-300">
-        {label}
-      </label>
-
+      <label className="mb-2 block text-zinc-300">{label}</label>
       <input
         value={value}
         onChange={e => onChange(e.target.value)}
         className="h-12 w-full rounded-xl border border-zinc-700 bg-black px-4 text-white outline-none transition focus:border-indigo-800"
       />
-
     </div>
   )
 }

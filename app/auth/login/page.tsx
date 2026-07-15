@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from '@/components/Toast'
 
 export default function LoginPage () {
   const router = useRouter()
@@ -35,7 +36,7 @@ export default function LoginPage () {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data.message)
+        toast.error(data.message)
         return
       }
 
@@ -43,7 +44,7 @@ export default function LoginPage () {
       router.refresh()
     } catch (error) {
       console.error(error)
-      alert('Something went wrong.')
+      toast.error('Something went wrong.')
     } finally {
       setLoading(false)
     }
@@ -130,7 +131,7 @@ export default function LoginPage () {
               </label>
 
               <Link
-                href='/forgot-password'
+                href='/auth/forgot-password'
                 className='text-indigo-800 hover:text-indigo-600 transition font-medium'
               >
                 Forgot Password?
@@ -141,6 +142,7 @@ export default function LoginPage () {
             <button
               type='submit'
               disabled={loading}
+              
               className='mt-4 w-full h-12 rounded-2xl bg-linear-to-r from-[#2B3494] to-indigo-800 text-white font-semibold text-base tracking-wide transition-all hover:brightness-110 active:scale-[0.985] disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-[#2B3494]/30'
             >
               {loading ? (

@@ -106,7 +106,7 @@ export default function CarDetailsPage () {
 
   return (
     <main className='bg-black'>
-      <CarDetailsNavbar carName={vehicle.name} />
+      <CarDetailsNavbar carName={vehicle.name} vehicleId={vehicle.id} />
 
       <CarHero
         vehicleId={vehicle.id}

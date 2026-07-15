@@ -3,6 +3,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import MenuBtn from './MenuBtn'
 import { useRouter } from 'next/navigation'
+import { toast } from './Toast'
 
 const Navbar = ({
   setShowPopup
@@ -20,13 +21,36 @@ const Navbar = ({
       .catch(() => setIsLoggedIn(false))
   }, [])
 
+  const handleShare = async () => {
+    const url = window.location.href
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'NK Car Showroom',
+          text: 'Check out NK Car Showroom - Maruti Suzuki',
+          url
+        })
+      } catch {
+        // User cancelled
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url)
+        toast.success('Link copied to clipboard')
+      } catch {
+        toast.error('Failed to copy link')
+      }
+    }
+  }
+
   const menuOptions = [
     {
       name: 'profile',
       action: () => router.push(isLoggedIn ? '/account' : '/auth/login')
     },
-    { name: 'share', action: () => setShowPopup(prev => !prev) },
-    { name: 'contact', action: () => {} }
+    { name: 'share', action: handleShare },
+    { name: 'contact', action: () => router.push('/dealer') }
   ]
 
   return (
