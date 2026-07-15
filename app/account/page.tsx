@@ -1,59 +1,96 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { Heart, User, CarFront, ArrowRight, Clock, Eye } from 'lucide-react'
 
-const stats = [
-  {
-    title: 'Wishlist',
-    value: 4,
-    icon: Heart,
-    href: '/account/wishlist',
-    color: 'text-red-500'
-  },
-  {
-    title: 'Profile',
-    value: '90%',
-    icon: User,
-    href: '/account/profile',
-    color: 'text-indigo-800'
-  },
-  {
-    title: 'Recently Viewed',
-    value: 12,
-    icon: Eye,
-    href: '/cars',
-    color: 'text-green-500'
-  },
-  {
-    title: 'Test Drives',
-    value: 2,
-    icon: CarFront,
-    href: '#',
-    color: 'text-yellow-500'
-  }
-]
-
-const recentActivity = [
-  {
-    title: 'Added Brezza to Wishlist',
-    time: '2 hours ago'
-  },
-  {
-    title: 'Viewed Fronx',
-    time: 'Yesterday'
-  },
-  {
-    title: 'Updated Mobile Number',
-    time: '3 days ago'
-  },
-  {
-    title: 'Visited Grand Vitara Details',
-    time: 'Last Week'
-  }
-]
+type UserData = {
+  id: string
+  fullName: string
+  email: string
+  mobile: string
+  createdAt: string
+  city: string | null
+  state: string | null
+}
 
 export default function AccountPage () {
+  const [user, setUser] = useState<UserData | null>(null)
+  const [wishlistCount, setWishlistCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData () {
+      try {
+        const [meRes, wishlistRes] = await Promise.all([
+          fetch('/api/auth/me', { credentials: 'include' }),
+          fetch('/api/wishlist', { credentials: 'include' })
+        ])
+
+        const meData = await meRes.json()
+        const wishlistData = await wishlistRes.json()
+
+        if (meData.success) {
+          setUser(meData.user)
+        }
+
+        if (wishlistData.success) {
+          setWishlistCount(wishlistData.wishlist?.length ?? 0)
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  const initials = user?.fullName
+    ? user.fullName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : 'U'
+
+  const memberYear = user?.createdAt
+    ? new Date(user.createdAt).getFullYear()
+    : '—'
+
+  const stats = [
+    {
+      title: 'Wishlist',
+      value: wishlistCount,
+      icon: Heart,
+      href: '/account/wishlist',
+      color: 'text-red-500'
+    },
+    {
+      title: 'Profile',
+      value: '90%',
+      icon: User,
+      href: '/account/profile',
+      color: 'text-indigo-800'
+    },
+    {
+      title: 'Recently Viewed',
+      value: 12,
+      icon: Eye,
+      href: '/cars',
+      color: 'text-green-500'
+    },
+    {
+      title: 'Test Drives',
+      value: 2,
+      icon: CarFront,
+      href: '#',
+      color: 'text-yellow-500'
+    }
+  ]
+
   return (
     <main className='mx-auto min-h-screen max-w-7xl px-4 py-8 md:px-8'>
       {/* Header */}
@@ -62,7 +99,7 @@ export default function AccountPage () {
         <p className='text-zinc-400'>Welcome Back 👋</p>
 
         <h1 className='mt-2 text-3xl font-bold text-white md:text-5xl'>
-          Ganesh Belote
+          {user?.fullName || 'Loading...'}
         </h1>
 
         <p className='mt-4 max-w-2xl text-zinc-400'>
@@ -117,7 +154,18 @@ export default function AccountPage () {
           </h2>
 
           <div className='space-y-4'>
-            {recentActivity.map((item, index) => (
+            {[
+              {
+                title: 'Viewing your dashboard',
+                time: 'Just now'
+              },
+              {
+                title: wishlistCount > 0
+                  ? `${wishlistCount} vehicle${wishlistCount > 1 ? 's' : ''} in wishlist`
+                  : 'No vehicles in wishlist yet',
+                time: 'Today'
+              }
+            ].map((item, index) => (
               <div
                 key={index}
                 className='flex items-center justify-between rounded-2xl border border-zinc-800 bg-black p-4'
@@ -141,33 +189,33 @@ export default function AccountPage () {
         <div className='rounded-3xl border border-zinc-800 bg-zinc-950 p-6'>
           <div className='flex flex-col items-center'>
             <div className='flex h-28 w-28 items-center justify-center rounded-full bg-[#2B3494] text-4xl font-bold text-white'>
-              G
+              {initials}
             </div>
 
             <h2 className='mt-5 text-2xl font-bold text-white'>
-              Ganesh Belote
+              {user?.fullName || '—'}
             </h2>
 
-            <p className='mt-1 text-zinc-400'>ganesh@gmail.com</p>
+            <p className='mt-1 text-zinc-400'>{user?.email || '—'}</p>
           </div>
 
           <div className='mt-8 space-y-4'>
             <div className='flex justify-between rounded-xl border border-zinc-800 bg-black p-4'>
               <span className='text-zinc-400'>Mobile</span>
 
-              <span className='text-white'>+91 8421022640</span>
+              <span className='text-white'>{user?.mobile || '—'}</span>
             </div>
 
             <div className='flex justify-between rounded-xl border border-zinc-800 bg-black p-4'>
               <span className='text-zinc-400'>Wishlist</span>
 
-              <span className='text-white'>4 Cars</span>
+              <span className='text-white'>{wishlistCount} Cars</span>
             </div>
 
             <div className='flex justify-between rounded-xl border border-zinc-800 bg-black p-4'>
               <span className='text-zinc-400'>Member Since</span>
 
-              <span className='text-white'>2026</span>
+              <span className='text-white'>{memberYear}</span>
             </div>
           </div>
 

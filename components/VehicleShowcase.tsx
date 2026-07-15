@@ -51,8 +51,45 @@ export default function VehicleShowcase ({ vehicles }: Props) {
     setActive(prev => (prev === 0 ? vehicles.length - 1 : prev - 1))
   }
 
+  // Skeleton loading state — shows placeholder cards instead of full-page loader
   if (loading) {
-    return <FullPageLoader />
+    return (
+      <section className='relative overflow-hidden bg-black py-12'>
+        <div className='mx-auto max-w-7xl px-4'>
+          <div className='mb-16 h-10 w-72 animate-pulse rounded-2xl bg-zinc-800 mx-auto' />
+
+          <div className='relative h-122.5 lg:h-137.5 md:h-137.5'>
+            <div className='absolute left-1/2 top-1/2 h-87.5 w-87.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-700/5 blur-[120px]' />
+
+            <div className='absolute inset-0 flex flex-col items-center justify-center'>
+              <div className='w-[50%] aspect-video animate-pulse rounded-3xl bg-zinc-800/50' />
+
+              <div className='mt-8 flex flex-col items-center gap-6 lg:flex-row'>
+                <div className='flex items-center gap-3'>
+                  <div className='h-8 w-40 animate-pulse rounded-2xl bg-zinc-800' />
+
+                  <div className='h-14 w-px bg-zinc-700' />
+
+                  <div className='space-y-2'>
+                    <div className='h-3 w-24 animate-pulse rounded-2xl bg-zinc-800' />
+
+                    <div className='h-6 w-28 animate-pulse rounded-2xl bg-zinc-800' />
+                  </div>
+                </div>
+
+                <div className='h-12 w-36 animate-pulse rounded-2xl bg-zinc-800' />
+              </div>
+            </div>
+          </div>
+
+          <div className='flex justify-center gap-5'>
+            <div className='h-12 w-12 animate-pulse rounded-full bg-zinc-800' />
+
+            <div className='h-12 w-12 animate-pulse rounded-full bg-zinc-800' />
+          </div>
+        </div>
+      </section>
+    )
   }
 
   if (vehicles.length === 0) {

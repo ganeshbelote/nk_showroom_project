@@ -30,8 +30,15 @@ export async function GET(req: NextRequest) {
         mobile: true,
         role: true,
         avatar: true,
+        gender: true,
+        dob: true,
+        occupation: true,
         city: true,
-        state: true
+        state: true,
+        budget: true,
+        preferredFuel: true,
+        preferredBody: true,
+        createdAt: true
       }
     })
 

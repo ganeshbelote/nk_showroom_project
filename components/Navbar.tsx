@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import MenuBtn from './MenuBtn'
 import { useRouter } from 'next/navigation'
 
@@ -10,10 +10,21 @@ const Navbar = ({
   setShowPopup: Dispatch<SetStateAction<boolean>>
 }) => {
   const [showMenu, setShowMenu] = useState<boolean>(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
   const router = useRouter();
 
+  useEffect(() => {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setIsLoggedIn(data.success))
+      .catch(() => setIsLoggedIn(false))
+  }, [])
+
   const menuOptions = [
-    { name: 'profile', action: () => router.push("/auth/login") },
+    {
+      name: 'profile',
+      action: () => router.push(isLoggedIn ? '/account' : '/auth/login')
+    },
     { name: 'share', action: () => setShowPopup(prev => !prev) },
     { name: 'contact', action: () => {} }
   ]

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   CarFront,
@@ -10,7 +11,6 @@ import {
   X,
   Users
 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
 
 const menus = [
   {
@@ -47,6 +47,17 @@ interface SidebarProps {
 
 export default function Sidebar ({ open, setOpen }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleLogout () {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.replace('/auth/login')
+      router.refresh()
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
+  }
 
   return (
     <>
@@ -101,7 +112,10 @@ export default function Sidebar ({ open, setOpen }: SidebarProps) {
           })}
         </nav>
 
-        <button className='m-4 flex items-center gap-3 rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:bg-zinc-900'>
+        <button
+          onClick={handleLogout}
+          className='m-4 flex items-center gap-3 rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:bg-zinc-900'
+        >
           <LogOut size={20} />
           Logout
         </button>

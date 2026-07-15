@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   User,
@@ -33,8 +33,18 @@ const menus = [
 
 export default function AccountNavbar () {
   const pathname = usePathname()
-
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+
+  async function handleLogout () {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.replace('/auth/login')
+      router.refresh()
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
+  }
 
   return (
     <>
@@ -82,7 +92,10 @@ export default function AccountNavbar () {
           {/* Right */}
 
           <div className='flex items-center gap-3'>
-            <button className='hidden rounded-xl border border-zinc-700 px-5 py-2 text-zinc-300 transition hover:bg-zinc-900 lg:flex'>
+            <button
+              onClick={handleLogout}
+              className='hidden rounded-xl border border-zinc-700 px-5 py-2 text-zinc-300 transition hover:bg-zinc-900 lg:flex'
+            >
               Logout
             </button>
 
@@ -142,7 +155,10 @@ export default function AccountNavbar () {
           })}
         </nav>
 
-        <button className='m-4 flex items-center justify-center gap-2 rounded-xl border border-zinc-700 py-3 text-zinc-300 transition hover:bg-zinc-900'>
+        <button
+          onClick={handleLogout}
+          className='m-4 flex items-center justify-center gap-2 rounded-xl border border-zinc-700 py-3 text-zinc-300 transition hover:bg-zinc-900'
+        >
           <LogOut size={18} />
           Logout
         </button>

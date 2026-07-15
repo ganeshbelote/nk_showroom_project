@@ -11,6 +11,7 @@ import FullPageLoader from '@/components/FullPageLoader'
 import CarDetailsNavbar from '@/components/car-details/CarDetailsNavbar'
 
 type Vehicle = {
+  id: string
   name: string
   description: string
   basePrice: number
@@ -108,6 +109,7 @@ export default function CarDetailsPage () {
       <CarDetailsNavbar carName={vehicle.name} />
 
       <CarHero
+        vehicleId={vehicle.id}
         car={{
           name: vehicle.name,
           description: vehicle.description,

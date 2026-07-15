@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import {
   Star,
   Heart,
@@ -11,6 +12,7 @@ import {
   Settings2,
   Users
 } from 'lucide-react'
+import { toast } from '@/components/Toast'
 
 interface Car {
   name: string
@@ -32,14 +34,111 @@ interface Car {
 
 interface Props {
   car: Car
+  vehicleId: string
 }
 
-export default function CarHero({ car }: Props) {
+export default function CarHero({ car, vehicleId }: Props) {
+  const router = useRouter()
   const [selectedImage, setSelectedImage] = useState(
     car.images.find(img => img.isCover)?.imageUrl ??
       car.images[0]?.imageUrl ??
       '/placeholder.png'
   )
+  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
+  const [wishlistCheckLoading, setWishlistCheckLoading] = useState(true)
+
+  // Check if vehicle is already in wishlist on mount
+  useEffect(() => {
+    const checkWishlist = async () => {
+      try {
+        const res = await fetch(`/api/wishlist?vehicleId=${vehicleId}`, {
+          credentials: 'include'
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsWishlisted(data.isWishlisted)
+        }
+      } catch (err) {
+        console.error('Failed to check wishlist:', err)
+      } finally {
+        setWishlistCheckLoading(false)
+      }
+    }
+
+    checkWishlist()
+  }, [vehicleId])
+
+  const toggleWishlist = useCallback(async () => {
+    // If not logged in, redirect to login
+    try {
+      const meRes = await fetch('/api/auth/me', { credentials: 'include' })
+      const meData = await meRes.json()
+      if (!meData.success) {
+        router.push('/auth/login')
+        return
+      }
+    } catch {
+      router.push('/auth/login')
+      return
+    }
+
+    setWishlistLoading(true)
+
+    try {
+      if (isWishlisted) {
+        const res = await fetch(`/api/wishlist?vehicleId=${vehicleId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsWishlisted(false)
+          toast.success('Removed from wishlist')
+        }
+      } else {
+        const res = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vehicleId }),
+          credentials: 'include'
+        })
+        const data = await res.json()
+        if (data.success) {
+          setIsWishlisted(true)
+          toast.success('Added to wishlist')
+        }
+      }
+    } catch (err) {
+      console.error('Wishlist toggle failed:', err)
+      toast.error('Something went wrong')
+    } finally {
+      setWishlistLoading(false)
+    }
+  }, [isWishlisted, vehicleId, router])
+
+  const handleShare = useCallback(async () => {
+    const url = window.location.href
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: car.name,
+          text: `Check out ${car.name} - ${car.price}`,
+          url
+        })
+      } catch {
+        // User cancelled share dialog
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url)
+        toast.success('Link copied to clipboard')
+      } catch {
+        toast.error('Failed to copy link')
+      }
+    }
+  }, [car.name, car.price])
 
   return (
     <section className="m-8 grid gap-12 lg:grid-cols-2">
@@ -157,11 +256,25 @@ export default function CarHero({ car }: Props) {
         </div>
 
         <div className="mt-8 flex gap-4">
-          <button className="rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:border-red-500 hover:text-red-500">
-            <Heart size={20} />
+          <button
+            onClick={toggleWishlist}
+            disabled={wishlistLoading || wishlistCheckLoading}
+            className={`rounded-xl border p-4 transition ${
+              isWishlisted
+                ? 'border-red-500 text-red-500 hover:bg-red-500/10'
+                : 'border-zinc-700 text-zinc-300 hover:border-red-500 hover:text-red-500'
+            } disabled:opacity-50`}
+          >
+            <Heart
+              size={20}
+              className={isWishlisted ? 'fill-red-500' : ''}
+            />
           </button>
 
-          <button className="rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:border-indigo-800 hover:text-indigo-800">
+          <button
+            onClick={handleShare}
+            className="rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:border-indigo-800 hover:text-indigo-800"
+          >
             <Share2 size={20} />
           </button>
         </div>
