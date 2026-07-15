@@ -8,27 +8,27 @@ import { motion } from 'framer-motion'
 const INITIAL_CAROUSEL_DATA = [
   {
     id: 1,
-    image: '/Fronx.png',
+    image: '/swift.png',
     tag: 'GALLERY',
     tagColor: 'orange',
-    title: 'Board Review: John John Florence and Jon Pyzel',
-    date: 'Yesterday'
+    title: 'Own the Icon. Drive the Swift.',
+    subtitle: 'Exclusive festive benefits on the Maruti Suzuki Swift.'
   },
   {
     id: 2,
-    image: '/Vitara.png',
+    image: '/swift_front.png',
     tag: 'NEWS',
     tagColor: 'red',
-    title: 'Ultimate Guide to Understanding Neoprene',
-    date: 'Yesterday'
+    title: 'Drive Your Dream Today',
+    subtitle: 'Easy Car Loans Starting at ₹1,999/month'
   },
   {
     id: 3,
     image: '/Brezza.png',
     tag: 'NEWS',
     tagColor: 'red',
-    title: 'Hawaii Is the Place to Be (During Quarantine)',
-    date: '2 days ago'
+    title: 'Drive Home the New Brezza',
+    subtitle: 'Save Up to ₹1.80 Lakh During the Mahalakshmi Festival'
   }
   // If you have more than 3 items, they will seamlessly cycle here too!
 ]
@@ -117,7 +117,7 @@ const Carousel = () => {
                     >
                       {card.title}
                     </h3>
-                    <p className='text-zinc-400 text-sm mb-6'>{card.date}</p>
+                    <p className='text-zinc-400 text-sm mb-6'>{card.subtitle}</p>
 
                     <a
                       href='#'
