@@ -151,7 +151,7 @@ export default function CarHero ({ car, vehicleId }: Props) {
             alt={car.name}
             width={900}
             height={600}
-            className='aspect-[16/10] w-full object-cover'
+            className='aspect-16/10 w-full object-cover'
           />
         </div>
 
