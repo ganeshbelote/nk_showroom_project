@@ -72,7 +72,7 @@ export default function ImageUploader({
           <div className="text-center">
             <Upload
               size={36}
-              className="mx-auto text-zinc-500 sm:size-[42px]"
+              className="mx-auto text-zinc-500 sm:size-10.5"
             />
             <p className="mt-4 px-4 text-center text-base text-white sm:text-lg">
               Upload Hero Image
