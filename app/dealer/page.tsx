@@ -6,7 +6,7 @@ import ColoredBtn from '@/components/ColoredBtn'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 
-export default function DealerPage() {
+export default function DealerPage () {
   return (
     <main className='min-h-screen bg-black'>
       {/* Sticky Header */}
@@ -64,9 +64,38 @@ export default function DealerPage() {
 
                 <p className='mt-3 text-2xl text-zinc-400'>Sales Consultant</p>
 
+                {/* BUTTONS */}
+                <div className='mt-10 flex flex-wrap gap-4'>
+                  <a href='tel:+919322608402' className='inline-flex'>
+                    <ColoredBtn
+                      Content='Call Now'
+                      Border={true}
+                      Animated={true}
+                      Color='blue'
+                    />
+                  </a>
+
+                  <a
+                    href='https://wa.me/919322608402'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex'
+                  >
+                    <ColoredBtn
+                      Content='WhatsApp'
+                      Border={true}
+                      Animated={true}
+                      Color='green'
+                    />
+                  </a>
+                </div>
+
                 <div className='mt-8 flex flex-wrap items-center gap-4 text-white'>
                   <div className='flex items-center gap-2'>
-                    <Star className='fill-indigo-800 text-indigo-800' size={24} />
+                    <Star
+                      className='fill-indigo-800 text-indigo-800'
+                      size={24}
+                    />
                     <span className='text-2xl font-bold'>4.9</span>
                     <span className='text-zinc-500'>/ 5</span>
                   </div>
@@ -110,53 +139,23 @@ export default function DealerPage() {
                   <div className='rounded-2xl border border-zinc-800 bg-zinc-950 p-6'>
                     <p className='text-sm text-zinc-400'>Phone</p>
                     <p className='mt-1 text-xl font-semibold text-white'>
-                      +91 98765 43210
+                      +91 93226 08402
                     </p>
                   </div>
 
                   <div className='rounded-2xl border border-zinc-800 bg-zinc-950 p-6'>
                     <p className='text-sm text-zinc-400'>Email</p>
                     <p className='mt-1 text-xl font-semibold text-white break-all'>
-                      nikhil.kane@marutisuzuki.com
+                      nikhilkane5050@gmail.com
                     </p>
                   </div>
 
                   <div className='rounded-2xl border border-zinc-800 bg-zinc-950 p-6'>
                     <p className='text-sm text-zinc-400'>Address</p>
                     <p className='mt-1 text-xl font-semibold text-white'>
-                      Maruti Suzuki Showroom, Shirur, Maharashtra
+                      Mahalaxmi Automotives Pvt. Ltd.HNO 753, Borade Mala, Gate No. 1326,Pune Nagar Highway, Shirur,Pune, Maharashtra 412210,India
                     </p>
                   </div>
-                </div>
-
-                {/* BUTTONS */}
-                <div className='mt-10 flex flex-wrap gap-4'>
-                  <a
-                    href='tel:+919876543210'
-                    className='inline-flex'
-                  >
-                    <ColoredBtn
-                      Content='Call Now'
-                      Border={true}
-                      Animated={true}
-                      Color='blue'
-                    />
-                  </a>
-
-                  <a
-                    href='https://wa.me/919876543210'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='inline-flex'
-                  >
-                    <ColoredBtn
-                      Content='WhatsApp'
-                      Border={true}
-                      Animated={true}
-                      Color='green'
-                    />
-                  </a>
-
                 </div>
               </motion.div>
             </div>
@@ -169,7 +168,7 @@ export default function DealerPage() {
   )
 }
 
-function StatCard({
+function StatCard ({
   icon,
   value,
   label

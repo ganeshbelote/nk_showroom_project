@@ -9,11 +9,11 @@ export default function ConsultantSection () {
   const router = useRouter()
 
   const handleWhatsApp = () => {
-  window.open(
-    "https://wa.me/919876543210?text=Hi%20I%20want%20to%20know%20more%20about%20your%20cars.",
-    "_blank"
-  )
-}
+    window.open(
+      'https://wa.me/919322608402?text=Hi%20I%20want%20to%20know%20more%20about%20your%20cars.',
+      '_blank'
+    )
+  }
 
   return (
     <section className='bg-black py-12'>
@@ -52,6 +52,26 @@ export default function ConsultantSection () {
               <h2 className='text-3xl font-bold text-white'>Nikhil Kane</h2>
 
               <p className='mt-3 text-2xl text-zinc-400'>Sales Consultant</p>
+
+              {/* BUTTONS */}
+
+              <div className='mt-10 flex flex-wrap gap-4'>
+                <ColoredBtn
+                  onClick={() => router.push('/dealer')}
+                  Content='Book Test Drive'
+                  Border={true}
+                  Animated={true}
+                  Color='blue'
+                />
+
+                <ColoredBtn
+                  onClick={handleWhatsApp}
+                  Content='WhatsApp'
+                  Border={true}
+                  Animated={true}
+                  Color='green'
+                />
+              </div>
 
               <div className='mt-8 flex flex-wrap items-center gap-4 text-white'>
                 <div className='flex items-center gap-2'>
@@ -92,26 +112,6 @@ export default function ConsultantSection () {
                   icon={<ShieldCheck size={24} />}
                   value='5 Years+'
                   label='Experience'
-                />
-              </div>
-
-              {/* BUTTONS */}
-
-              <div className='mt-10 flex flex-wrap gap-4'>
-                <ColoredBtn
-                  onClick={() => router.push('/dealer')}
-                  Content='Book Test Drive'
-                  Border={true}
-                  Animated={true}
-                  Color='blue'
-                />
-
-                <ColoredBtn
-                  onClick={handleWhatsApp}
-                  Content='WhatsApp'
-                  Border={true}
-                  Animated={true}
-                  Color='green'
                 />
               </div>
             </motion.div>
