@@ -29,7 +29,7 @@ type VehicleEditorProps = {
 }
 
 export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
-  const [update, setUpdate] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [features, setFeatures] = useState<string[]>(['Power Steering', 'ABS'])
   const [formData, setFormData] = useState({
     name: '',
@@ -135,36 +135,42 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
   }
 
   const handleSubmit = async () => {
-    const res = await fetch(`/api/vehicles/${slug}`, {
-      method: 'PATCH',
+    setSaving(true)
 
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    try {
+      const res = await fetch(`/api/vehicles/${slug}`, {
+        method: 'PATCH',
 
-      body: JSON.stringify({
-        ...formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
 
-        basePrice: Number(formData.basePrice),
+        body: JSON.stringify({
+          ...formData,
 
-        cylinders: Number(formData.cylinders),
+          basePrice: Number(formData.basePrice),
 
-        seatingCapacity: Number(formData.seatingCapacity)
+          cylinders: Number(formData.cylinders),
+
+          seatingCapacity: Number(formData.seatingCapacity)
+        })
       })
-    })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    setUpdate(false)
+      if (!res.ok) {
+        toast.error(data.message)
+        return
+      }
 
-    if (!res.ok) {
-      toast.error(data.message)
-      return
+      toast.success('Vehicle updated')
+
+      onSaved()
+    } catch (error) {
+      toast.error('Failed to update vehicle')
+    } finally {
+      setSaving(false)
     }
-
-    toast.success('Vehicle updated')
-
-    onSaved()
   }
 
   if (loading) {
@@ -175,10 +181,10 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
     <div className='space-y-10 rounded-3xl border border-zinc-800 bg-zinc-950 p-5 sm:p-6 lg:p-8'>
       <div className='flex flex-col gap-2'>
         <h1 className='text-2xl font-bold text-white sm:text-3xl'>
-          Add Vehicle
+          Edit Vehicle
         </h1>
 
-        <p className='text-sm text-zinc-500'>Fill vehicle information below.</p>
+        <p className='text-sm text-zinc-500'>Update vehicle information below.</p>
       </div>
 
       {/* BASIC */}
@@ -413,13 +419,16 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
 
       <div className='flex justify-center sm:justify-end'>
         <button
-          className={`h-12 w-full rounded-xl bg-[#2B3494] px-8 font-semibold text-white transition hover:bg-indigo-800 sm:w-auto ${
-            update && 'pointer-events-none'
+          className={`h-12 w-full rounded-xl px-8 font-semibold text-white transition sm:w-auto ${
+            saving
+              ? 'cursor-not-allowed bg-zinc-700'
+              : 'bg-[#2B3494] hover:bg-indigo-800'
           }`}
           type='button'
           onClick={handleSubmit}
+          disabled={saving}
         >
-          {update ? 'updating...' : 'Save Vehicle'}
+          {saving ? 'Updating...' : 'Save Vehicle'}
         </button>
       </div>
     </div>

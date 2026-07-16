@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Phone, Mail, Calendar, Eye, Trash2 } from 'lucide-react'
+import { Search, Phone, Mail, Calendar, Users, Trash2 } from 'lucide-react'
 import { toast } from '@/components/Toast'
 
 type Visitor = {
@@ -24,10 +24,14 @@ export default function VisitorsPage () {
     try {
       const res = await fetch('/api/visitors')
       const data = await res.json()
-      if (data.success) setVisitors(data.visitors)
+      if (data.success) {
+        setVisitors(data.visitors || [])
+      } else {
+        toast.error(data.message || 'Failed to load visitors')
+      }
     } catch (err) {
-      console.error(err)
-      toast.error('Failed to load visitors')
+      console.error('Visitors fetch error:', err)
+      toast.error('Failed to load visitors. Check console.')
     } finally {
       setLoading(false)
     }
@@ -118,9 +122,17 @@ export default function VisitorsPage () {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
-        <div className='text-center py-16 text-zinc-500'>
-          <p className='text-lg'>No visitors found</p>
+      {loading ? (
+        <div className='h-64 animate-pulse rounded-3xl bg-zinc-900' />
+      ) : filtered.length === 0 ? (
+        <div className='flex flex-col items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-950 py-20 text-zinc-500'>
+          <Users size={48} className='mb-4 text-zinc-700' />
+          <p className='text-lg font-medium'>No visitors found</p>
+          <p className='mt-1 text-sm text-zinc-600'>
+            {visitors.length === 0
+              ? 'No one has contacted yet.'
+              : 'Try a different search term.'}
+          </p>
         </div>
       ) : (
         <>

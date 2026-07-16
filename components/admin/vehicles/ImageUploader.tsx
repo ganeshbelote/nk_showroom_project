@@ -2,8 +2,9 @@
 
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ImagePlus, Star, Trash2 } from 'lucide-react'
+import { ImagePlus, Star, Trash2, Sparkles, Loader2 } from 'lucide-react'
 import { useRef, useState, ChangeEvent } from 'react'
+import { toast } from '@/components/Toast'
 
 type UploadedImage = {
   imageUrl: string
@@ -19,6 +20,7 @@ type Props = {
 
 export default function ImageUploader ({ images, setImages }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const [removingBg, setRemovingBg] = useState<string | null>(null)
 
   const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -66,6 +68,46 @@ export default function ImageUploader ({ images, setImages }: Props) {
         isCover: i === index
       }))
     )
+  }
+
+  async function removeBackground (index: number) {
+    const img = images[index]
+    if (!img) return
+
+    setRemovingBg(img.publicId)
+
+    try {
+      const res = await fetch('/api/remove-bg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: img.imageUrl,
+          publicId: img.publicId
+        })
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        toast.error(data.message || 'Failed to remove background')
+        return
+      }
+
+      // Replace the image in the list with the no-bg version
+      setImages(
+        images.map((im, i) =>
+          i === index
+            ? { ...im, imageUrl: data.image.url, publicId: data.image.publicId }
+            : im
+        )
+      )
+
+      toast.success('Background removed successfully')
+    } catch {
+      toast.error('Failed to remove background')
+    } finally {
+      setRemovingBg(null)
+    }
   }
   return (
     <section className='space-y-8'>
@@ -122,6 +164,21 @@ export default function ImageUploader ({ images, setImages }: Props) {
 
               <div className='absolute inset-0 bg-black/70 opacity-0 transition duration-300 group-hover:opacity-100'>
                 <div className='absolute bottom-4 left-4 right-4 flex items-center justify-between'>
+                  {removingBg === img.publicId ? (
+                    <div className='rounded-xl bg-indigo-700 p-3'>
+                      <Loader2 size={18} className='animate-spin text-white' />
+                    </div>
+                  ) : (
+                    <button
+                      type='button'
+                      title='Remove background (cover image)'
+                      onClick={() => removeBackground(index)}
+                      className='rounded-xl bg-zinc-800 p-3 transition hover:bg-indigo-700'
+                    >
+                      <Sparkles size={18} className='text-white' />
+                    </button>
+                  )}
+
                   <button
                     type='button'
                     onClick={() => setCover(index)}

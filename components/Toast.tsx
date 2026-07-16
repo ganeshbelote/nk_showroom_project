@@ -49,7 +49,7 @@ export const Toast = ({
   return (
     <ToastContext.Provider value={{ addToast, removeToast }}>
       {/* Toast container */}
-      <div className={`fixed ${getPosition(position)} space-y-2`}>
+      <div className={`z-999 fixed ${getPosition(position)} space-y-2`}>
         <AnimatePresence>
           {toasts.map(toast => (
             <motion.div
