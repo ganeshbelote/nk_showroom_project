@@ -37,7 +37,7 @@ interface Props {
   vehicleId: string
 }
 
-export default function CarHero({ car, vehicleId }: Props) {
+export default function CarHero ({ car, vehicleId }: Props) {
   const router = useRouter()
   const [selectedImage, setSelectedImage] = useState(
     car.images.find(img => img.isCover)?.imageUrl ??
@@ -141,21 +141,21 @@ export default function CarHero({ car, vehicleId }: Props) {
   }, [car.name, car.price])
 
   return (
-    <section className="m-8 grid gap-12 lg:grid-cols-2">
+    <section className='m-8 grid gap-12 lg:grid-cols-2'>
       {/* LEFT */}
 
       <div>
-        <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950">
+        <div className='overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950'>
           <Image
             src={selectedImage}
             alt={car.name}
             width={900}
             height={600}
-            className="aspect-[16/10] w-full object-cover"
+            className='aspect-[16/10] w-full object-cover'
           />
         </div>
 
-        <div className="mt-4 grid grid-cols-4 gap-3">
+        <div className='mt-4 grid grid-cols-4 gap-3'>
           {car.images.map((img, index) => (
             <button
               key={index}
@@ -171,7 +171,7 @@ export default function CarHero({ car, vehicleId }: Props) {
                 alt={car.name}
                 width={200}
                 height={150}
-                className="aspect-video w-full object-cover"
+                className='aspect-video w-full object-cover'
               />
             </button>
           ))}
@@ -181,81 +181,81 @@ export default function CarHero({ car, vehicleId }: Props) {
       {/* RIGHT */}
 
       <div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-[#2B3494] px-4 py-1 text-sm text-white">
+        <div className='flex flex-wrap items-center gap-3'>
+          <span className='rounded-full bg-[#2B3494] px-4 py-1 text-sm text-white'>
             New
           </span>
 
-          <div className="flex items-center gap-1">
-            <Star size={18} fill="#facc15" className="text-yellow-400" />
+          <div className='flex items-center gap-1'>
+            <Star size={18} fill='#facc15' className='text-yellow-400' />
 
-            <span className="font-medium text-white">
+            <span className='font-medium text-white'>
               {car.rating.toFixed(1)}
             </span>
 
-            <span className="text-zinc-400">
-              ({car.reviews} Reviews)
-            </span>
+            <span className='text-zinc-400'>({car.reviews} Reviews)</span>
           </div>
         </div>
 
-        <h1 className="mt-5 text-4xl font-bold text-white lg:text-5xl">
+        <h1 className='mt-5 text-4xl font-bold text-white lg:text-5xl'>
           {car.name}
         </h1>
 
-        <p className="mt-5 leading-8 text-zinc-400">
-          {car.description}
-        </p>
+        <p className='mt-5 leading-8 text-zinc-400'>{car.description}</p>
 
-        <div className="mt-8">
-          <p className="text-sm text-zinc-500">Starting From</p>
+        <div className='mt-8'>
+          <p className='text-sm text-zinc-500'>Starting From</p>
 
-          <h2 className="mt-2 text-5xl font-bold text-indigo-800">
+          <h2 className='mt-2 text-5xl font-bold text-indigo-800'>
             {car.price}
           </h2>
 
-          <p className="mt-2 text-zinc-500">
-            *Ex-showroom Price
-          </p>
+          <p className='mt-2 text-zinc-500'>*Ex-showroom Price</p>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4">
+        <div className='mt-10 grid grid-cols-2 gap-4'>
           <SpecCard
             icon={<Fuel size={20} />}
-            title="Fuel"
+            title='Fuel'
             value={car.fuelType}
           />
 
           <SpecCard
             icon={<Gauge size={20} />}
-            title="Mileage"
+            title='Mileage'
             value={car.mileage}
           />
 
           <SpecCard
             icon={<Settings2 size={20} />}
-            title="Transmission"
+            title='Transmission'
             value={car.transmission}
           />
 
           <SpecCard
             icon={<Users size={20} />}
-            title="Seats"
+            title='Seats'
             value={String(car.seatingCapacity)}
           />
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-          <button className="flex-1 rounded-xl bg-[#2B3494] py-4 font-semibold text-white transition hover:bg-indigo-800">
+        <div className='mt-10 flex flex-col gap-4 sm:flex-row'>
+          <button
+            className='flex-1 rounded-xl bg-[#2B3494] py-4 font-semibold text-white transition hover:bg-indigo-800'
+            onClick={() => router.push('/dealer')}
+          >
             Book Test Drive
           </button>
 
-          <button className="flex-1 rounded-xl border border-zinc-700 py-4 font-semibold text-white transition hover:border-indigo-800">
+          <button
+            className='flex-1 rounded-xl border border-zinc-700 py-4 font-semibold text-white transition hover:border-indigo-800'
+            onClick={() => router.push('/dealer')}
+          >
             Get On-Road Price
           </button>
         </div>
 
-        <div className="mt-8 flex gap-4">
+        <div className='mt-8 flex gap-4'>
           <button
             onClick={toggleWishlist}
             disabled={wishlistLoading || wishlistCheckLoading}
@@ -265,15 +265,12 @@ export default function CarHero({ car, vehicleId }: Props) {
                 : 'border-zinc-700 text-zinc-300 hover:border-red-500 hover:text-red-500'
             } disabled:opacity-50`}
           >
-            <Heart
-              size={20}
-              className={isWishlisted ? 'fill-red-500' : ''}
-            />
+            <Heart size={20} className={isWishlisted ? 'fill-red-500' : ''} />
           </button>
 
           <button
             onClick={handleShare}
-            className="rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:border-indigo-800 hover:text-indigo-800"
+            className='rounded-xl border border-zinc-700 p-4 text-zinc-300 transition hover:border-indigo-800 hover:text-indigo-800'
           >
             <Share2 size={20} />
           </button>
@@ -283,7 +280,7 @@ export default function CarHero({ car, vehicleId }: Props) {
   )
 }
 
-function SpecCard({
+function SpecCard ({
   icon,
   title,
   value
@@ -293,12 +290,12 @@ function SpecCard({
   value: string
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+    <div className='rounded-2xl border border-zinc-800 bg-zinc-950 p-5'>
       {icon}
 
-      <p className="mt-3 text-sm text-zinc-500">{title}</p>
+      <p className='mt-3 text-sm text-zinc-500'>{title}</p>
 
-      <p className="mt-2 font-semibold text-white">{value}</p>
+      <p className='mt-2 font-semibold text-white'>{value}</p>
     </div>
   )
 }

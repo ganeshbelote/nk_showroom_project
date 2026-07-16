@@ -129,7 +129,7 @@ export default function DealerPage () {
 
                   <StatCard
                     icon={<ShieldCheck size={24} />}
-                    value='5 Years+'
+                    value='3 Years+'
                     label='Experience'
                   />
                 </div>

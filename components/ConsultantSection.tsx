@@ -110,7 +110,7 @@ export default function ConsultantSection () {
 
                 <StatCard
                   icon={<ShieldCheck size={24} />}
-                  value='5 Years+'
+                  value='3 Years+'
                   label='Experience'
                 />
               </div>
