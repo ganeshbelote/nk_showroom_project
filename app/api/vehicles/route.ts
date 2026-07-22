@@ -108,7 +108,11 @@ const variantSchema = z.object({
   name: z.string(),
   price: z.number(),
   fuel: z.string(),
-  transmission: z.string()
+  transmission: z.string(),
+  alternateFuel: z.string().nullable().optional(),
+  alternatePrice: z.number().nullable().optional(),
+  petrolMileage: z.string().nullable().optional(),
+  cngMileage: z.string().nullable().optional()
 })
 
 const imageSchema = z.object({
@@ -132,6 +136,9 @@ const vehicleSchema = z.object({
 
   mileage: z.string(),
   cityMileage: z.string().optional(),
+
+  petrolMileage: z.string().optional(),
+  cngMileage: z.string().optional(),
 
   fuelType: z.string(),
 
@@ -216,6 +223,9 @@ export async function POST (req: NextRequest) {
         mileage: data.mileage,
         cityMileage: data.cityMileage,
 
+        petrolMileage: data.petrolMileage,
+        cngMileage: data.cngMileage,
+
         fuelType: data.fuelType,
 
         engine: data.engine,
@@ -249,7 +259,11 @@ export async function POST (req: NextRequest) {
             name: variant.name,
             price: variant.price,
             fuel: variant.fuel,
-            transmission: variant.transmission
+            transmission: variant.transmission,
+            alternateFuel: variant.alternateFuel || null,
+            alternatePrice: variant.alternatePrice || null,
+            petrolMileage: variant.petrolMileage || null,
+            cngMileage: variant.cngMileage || null
           }))
         },
 

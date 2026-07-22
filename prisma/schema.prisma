@@ -78,8 +78,12 @@ model User {
 
   role Role @default(USER)
 
+  // For Task 4: Track if admin has contacted this user
+  iscontacted Boolean @default(false)
+
   wishlist Wishlist[]
   reviews  Review[]
+  onRoadPrices OnRoadPrice[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -95,6 +99,14 @@ model Variant {
   fuel String
 
   transmission String
+
+  // For Task 2: Alternate fuel support (e.g., CNG variant also has petrol)
+  alternateFuel String?
+  alternatePrice Decimal? @db.Decimal(10, 2)
+
+  // For Task 2: Separate mileage for each fuel type in variants
+  petrolMileage String?
+  cngMileage String?
 
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
@@ -147,6 +159,10 @@ model Vehicle {
   mileage     String
   cityMileage String?
 
+  // For Task 2: Multiple fuel mileage
+  petrolMileage String?
+  cngMileage    String?
+
   fuelType String
 
   engine String
@@ -179,8 +195,9 @@ model Vehicle {
 
   wishlists Wishlist[]
 
-  createdAt DateTime @default(now())
+  onRoadPrices OnRoadPrice[]
 
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
@@ -236,4 +253,35 @@ model PasswordResetToken {
 
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+// ========== TASK 3: ON-ROAD PRICE ==========
+
+model OnRoadPrice {
+  id String @id @default(cuid())
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  exShowroomPrice  Decimal @db.Decimal(12, 2)
+  insurance        Decimal @db.Decimal(12, 2)
+  rtoTax           Decimal @db.Decimal(12, 2)
+  registrationFees Decimal @db.Decimal(12, 2)
+  fastag           Decimal @db.Decimal(12, 2)
+  extendedWarranty Decimal @db.Decimal(12, 2) @default(0)
+  autoCard         Decimal @db.Decimal(12, 2) @default(0)
+  numberPlateGarnish Decimal @db.Decimal(12, 2) @default(0)
+  accessories      Decimal @db.Decimal(12, 2) @default(0)
+  tcs              Decimal @db.Decimal(12, 2)
+  discount         Decimal @db.Decimal(12, 2) @default(0)
+  totalBeforeDiscount Decimal @db.Decimal(12, 2)
+  finalOnRoadPrice Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([vehicleId, userId])
 }

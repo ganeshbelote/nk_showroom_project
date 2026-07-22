@@ -31,7 +31,7 @@ export default function VariantPricing ({ variants }: Props) {
   }, [variants, fuel, transmission])
 
   return (
-    <section className='rounded-3xl border border-zinc-800 bg-zinc-950 p-4 md:p-8'>
+    <section className='mt-5 rounded-3xl border border-zinc-800 bg-zinc-950 p-4 md:p-8'>
       <div className='mb-8'>
         <h2 className='text-2xl font-bold text-white md:text-3xl'>
           Variant Pricing

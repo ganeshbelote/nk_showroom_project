@@ -93,7 +93,11 @@ const variantSchema = z.object({
   name: z.string(),
   price: z.coerce.number(),
   fuel: z.string(),
-  transmission: z.string()
+  transmission: z.string(),
+  alternateFuel: z.string().nullable().optional(),
+  alternatePrice: z.coerce.number().nullable().optional(),
+  petrolMileage: z.string().nullable().optional(),
+  cngMileage: z.string().nullable().optional()
 })
 
 const imageSchema = z.object({
@@ -119,6 +123,9 @@ const vehicleSchema = z.object({
   mileage: z.string(),
 
   cityMileage: z.string().optional(),
+
+  petrolMileage: z.string().optional(),
+  cngMileage: z.string().optional(),
 
   fuelType: z.string(),
 
@@ -223,8 +230,6 @@ export async function PATCH (
         }
       })
 
-      console.log(data.images)
-
       return tx.vehicle.update({
         where: {
           id: exists.id
@@ -240,7 +245,16 @@ export async function PATCH (
           },
 
           variants: {
-            create: data.variants
+            create: data.variants.map(v => ({
+              name: v.name,
+              price: v.price,
+              fuel: v.fuel,
+              transmission: v.transmission,
+              alternateFuel: v.alternateFuel || null,
+              alternatePrice: v.alternatePrice || null,
+              petrolMileage: v.petrolMileage || null,
+              cngMileage: v.cngMileage || null
+            }))
           },
 
           images: {

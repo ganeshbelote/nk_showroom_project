@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import ImageUploader from './ImageUploader'
 import VariantManager from './VariantManager'
+import OnRoadPriceManager from './OnRoadPriceManager'
 import { toast } from '@/components/Toast'
 import FullPageLoader from '@/components/FullPageLoader'
 import { useAsync } from '@/hooks/useAsync'
@@ -14,6 +15,10 @@ export type VariantType = {
   price: number
   fuel: string
   transmission: string
+  alternateFuel?: string | null
+  alternatePrice?: number | null
+  petrolMileage?: string | null
+  cngMileage?: string | null
 }
 
 export type ImageType = {
@@ -31,6 +36,7 @@ type VehicleEditorProps = {
 export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
   const [saving, setSaving] = useState(false)
   const [features, setFeatures] = useState<string[]>(['Power Steering', 'ABS'])
+  const [vehicleId, setVehicleId] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -43,6 +49,9 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
 
     mileage: '',
     cityMileage: '',
+
+    petrolMileage: '',
+    cngMileage: '',
 
     fuelType: '',
 
@@ -73,7 +82,6 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
   const { loading, execute } = useAsync()
 
   useEffect(() => {
-    console.log(slug)
     execute(async () => {
       const data = await apiFetch<{ vehicle: any }>(`/api/vehicles/${slug}`)
 
@@ -81,6 +89,7 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
 
       const featureList = vehicle.features.map((f: { name: string }) => f.name)
 
+      setVehicleId(vehicle.id)
       setFeatures(featureList)
 
       setFormData({
@@ -271,6 +280,20 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
           />
 
           <Input
+            label='Petrol Mileage'
+            name='petrolMileage'
+            value={formData.petrolMileage}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='CNG Mileage'
+            name='cngMileage'
+            value={formData.cngMileage}
+            onChange={handleChange}
+          />
+
+          <Input
             label='Fuel Type'
             name='fuelType'
             value={formData.fuelType}
@@ -413,6 +436,20 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
             }
           />
         </div>
+      </div>
+
+      {/* ON-ROAD PRICE MANAGEMENT */}
+
+      <div>
+        <h2 className='mb-6 text-xl font-bold text-white sm:text-2xl'>
+          On-Road Price Management
+        </h2>
+
+        <OnRoadPriceManager
+          vehicleId={vehicleId}
+          vehicleName={formData.name}
+          basePrice={Number(formData.basePrice) || 0}
+        />
       </div>
 
       {/* SAVE */}

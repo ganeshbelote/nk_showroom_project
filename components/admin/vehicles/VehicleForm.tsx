@@ -11,6 +11,10 @@ export type VariantType = {
   price: number
   fuel: string
   transmission: string
+  alternateFuel?: string | null
+  alternatePrice?: number | null
+  petrolMileage?: string | null
+  cngMileage?: string | null
 }
 
 export type ImageType = {
@@ -34,6 +38,10 @@ export default function VehicleForm () {
 
     mileage: '',
     cityMileage: '',
+
+    // Task 2: Multiple fuel mileage
+    petrolMileage: '',
+    cngMileage: '',
 
     fuelType: '',
 
@@ -232,6 +240,21 @@ export default function VehicleForm () {
             label='City Mileage'
             name='cityMileage'
             value={formData.cityMileage}
+            onChange={handleChange}
+          />
+
+          {/* Task 2: Multiple fuel mileage */}
+          <Input
+            label='Petrol Mileage'
+            name='petrolMileage'
+            value={formData.petrolMileage}
+            onChange={handleChange}
+          />
+
+          <Input
+            label='CNG Mileage'
+            name='cngMileage'
+            value={formData.cngMileage}
             onChange={handleChange}
           />
 

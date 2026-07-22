@@ -249,7 +249,25 @@ export default function CarHero ({ car, vehicleId }: Props) {
 
           <button
             className='flex-1 rounded-xl border border-zinc-700 py-4 font-semibold text-white transition hover:border-indigo-800'
-            onClick={() => router.push('/dealer')}
+            onClick={async () => {
+              // Check if user is logged in
+              try {
+                const meRes = await fetch('/api/auth/me', { credentials: 'include' })
+                const meData = await meRes.json()
+                if (!meData.success) {
+                  router.push('/auth/login')
+                  return
+                }
+              } catch {
+                router.push('/auth/login')
+                return
+              }
+              // Scroll to on-road price section
+              const el = document.getElementById('onroadprice')
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            }}
           >
             Get On-Road Price
           </button>

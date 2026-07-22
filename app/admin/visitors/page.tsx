@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Phone, Mail, Calendar, Users, Trash2 } from 'lucide-react'
+import { Search, Phone, Mail, Calendar, Users, CheckCircle } from 'lucide-react'
 import { toast } from '@/components/Toast'
 
 type Visitor = {
@@ -12,6 +12,8 @@ type Visitor = {
   interested: string
   message: string | null
   status: string
+  city: string | null
+  state: string | null
   createdAt: string
 }
 
@@ -56,20 +58,6 @@ export default function VisitorsPage () {
     }
   }
 
-  const deleteVisitor = async (id: string) => {
-    if (!confirm('Delete this visitor?')) return
-    try {
-      const res = await fetch(`/api/visitors?id=${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.success) {
-        setVisitors(prev => prev.filter(v => v.id !== id))
-        toast.success('Visitor deleted')
-      }
-    } catch {
-      toast.error('Failed to delete')
-    }
-  }
-
   const filtered = visitors.filter(visitor =>
     visitor.name.toLowerCase().includes(search.toLowerCase()) ||
     visitor.email.toLowerCase().includes(search.toLowerCase()) ||
@@ -107,7 +95,7 @@ export default function VisitorsPage () {
         <div>
           <h1 className='text-2xl font-bold text-white sm:text-3xl'>Visitors</h1>
           <p className='mt-2 text-sm text-zinc-400 sm:text-base'>
-            Customers interested in purchasing vehicles.
+            Registered users interested in purchasing vehicles.
           </p>
         </div>
 
@@ -130,7 +118,7 @@ export default function VisitorsPage () {
           <p className='text-lg font-medium'>No visitors found</p>
           <p className='mt-1 text-sm text-zinc-600'>
             {visitors.length === 0
-              ? 'No one has contacted yet.'
+              ? 'No users have registered yet.'
               : 'Try a different search term.'}
           </p>
         </div>
@@ -147,22 +135,18 @@ export default function VisitorsPage () {
                       {visitor.status}
                     </span>
                   </div>
-                  <div className='flex gap-2'>
-                    <button onClick={() => deleteVisitor(visitor.id)} className='rounded-xl bg-zinc-800 p-3 transition hover:bg-red-600'>
-                      <Trash2 size={18} className='text-white' />
-                    </button>
-                  </div>
                 </div>
 
                 <div className='mt-5 space-y-3 text-sm text-zinc-400'>
                   <div className='flex items-center gap-3'><Phone size={16} />{visitor.phone}</div>
                   <div className='flex items-center gap-3 break-all'><Mail size={16} />{visitor.email}</div>
                   <div className='flex items-center gap-3'>🚗 {visitor.interested}</div>
+                  {visitor.message && <div className='flex items-center gap-3'>💬 {visitor.message}</div>}
                   <div className='flex items-center gap-3'><Calendar size={16} />{formatDate(visitor.createdAt)}</div>
                 </div>
 
                 <div className='mt-4 flex gap-2'>
-                  {['New', 'Contacted', 'Visited', 'Closed'].map(s => (
+                  {['New', 'Contacted'].map(s => (
                     <button
                       key={s}
                       onClick={() => updateStatus(visitor.id, s)}
@@ -172,7 +156,7 @@ export default function VisitorsPage () {
                           : 'bg-zinc-800 text-zinc-400 hover:text-white'
                       }`}
                     >
-                      {s}
+                      {s === 'Contacted' ? <span className='flex items-center gap-1'><CheckCircle size={14} /> Contacted</span> : s}
                     </button>
                   ))}
                 </div>
@@ -191,7 +175,6 @@ export default function VisitorsPage () {
                     <th>Date</th>
                     <th>Status</th>
                     <th className='w-40'>Actions</th>
-                    <th className='w-16'></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,7 +200,7 @@ export default function VisitorsPage () {
                       </td>
                       <td>
                         <div className='flex gap-1'>
-                          {['New', 'Contacted', 'Visited', 'Closed'].map(s => (
+                          {['New', 'Contacted'].map(s => (
                             <button
                               key={s}
                               onClick={() => updateStatus(visitor.id, s)}
@@ -227,18 +210,10 @@ export default function VisitorsPage () {
                                   : 'bg-zinc-800 text-zinc-400 hover:text-white'
                               }`}
                             >
-                              {s}
+                              {s === 'Contacted' ? 'Mark Contacted' : s}
                             </button>
                           ))}
                         </div>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => deleteVisitor(visitor.id)}
-                          className='rounded-lg bg-zinc-800 p-2 transition hover:bg-red-600'
-                        >
-                          <Trash2 size={16} className='text-white' />
-                        </button>
                       </td>
                     </tr>
                   ))}

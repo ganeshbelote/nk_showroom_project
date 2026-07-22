@@ -7,6 +7,7 @@ import CarHero from '@/components/car-details/CarHero'
 import CarHighlights from '@/components/car-details/CarHighlights'
 import VariantPricing from '@/components/car-details/VariantPricing'
 import CarReviews from '@/components/car-details/CarReviews'
+import OnRoadPriceSection from '@/components/car-details/OnRoadPriceSection'
 import FullPageLoader from '@/components/FullPageLoader'
 import CarDetailsNavbar from '@/components/car-details/CarDetailsNavbar'
 
@@ -16,6 +17,8 @@ type Vehicle = {
   description: string
   basePrice: number
   mileage: string
+  petrolMileage: string | null
+  cngMileage: string | null
   engine: string
   power: string
   torque: string
@@ -40,6 +43,10 @@ type Vehicle = {
     price: string
     fuel: string
     transmission: string
+    alternateFuel: string | null
+    alternatePrice: string | null
+    petrolMileage: string | null
+    cngMileage: string | null
   }[]
 
   reviews: {
@@ -104,6 +111,11 @@ export default function CarDetailsPage () {
           vehicle.reviews.length
         ).toFixed(1)
 
+  // Build mileage display for highlights
+  const mileageDisplay = vehicle.petrolMileage
+    ? `Petrol: ${vehicle.petrolMileage}` + (vehicle.cngMileage ? ` | CNG: ${vehicle.cngMileage}` : '')
+    : vehicle.mileage
+
   return (
     <main className='bg-black'>
       <CarDetailsNavbar carName={vehicle.name} vehicleId={vehicle.id} />
@@ -118,7 +130,7 @@ export default function CarDetailsPage () {
           reviews: vehicle.reviews.length,
 
           fuelType: vehicle.fuelType,
-          mileage: vehicle.mileage,
+          mileage: mileageDisplay,
           transmission: vehicle.transmission,
           seatingCapacity: vehicle.seatingCapacity,
 
@@ -128,7 +140,7 @@ export default function CarDetailsPage () {
 
       <CarHighlights
         car={{
-          mileage: vehicle.mileage,
+          mileage: mileageDisplay,
           engine: vehicle.engine,
           power: vehicle.power,
           torque: vehicle.torque,
@@ -143,6 +155,10 @@ export default function CarDetailsPage () {
       />
 
       <VariantPricing variants={vehicle.variants} />
+
+      <div id='onroadprice' className='px-4 md:px-8 pb-8'>
+        <OnRoadPriceSection vehicleId={vehicle.id} basePrice={Number(vehicle.basePrice)} />
+      </div>
 
       <CarReviews reviews={vehicle.reviews} />
     </main>
