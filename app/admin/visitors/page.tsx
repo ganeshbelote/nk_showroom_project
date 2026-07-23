@@ -194,7 +194,7 @@ export default function VisitorsPage () {
                         </div>
                       </td>
                       <td>
-                        <span className={`rounded-full px-3 py-1 text-sm font-medium text-white ${badgeColor(visitor.status)}`}>
+                        <span className={`rounded-full px-2 py-1 text-sm font-medium text-white ${badgeColor(visitor.status)}`}>
                           {visitor.status}
                         </span>
                       </td>
@@ -204,7 +204,7 @@ export default function VisitorsPage () {
                             <button
                               key={s}
                               onClick={() => updateStatus(visitor.id, s)}
-                              className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
+                              className={`rounded-lg px-2 py-1.5 text-xs font-medium transition ${
                                 visitor.status === s
                                   ? badgeColor(s) + ' text-white'
                                   : 'bg-zinc-800 text-zinc-400 hover:text-white'

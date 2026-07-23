@@ -24,6 +24,11 @@ const menus = [
     icon: CarFront
   },
   {
+    name: 'Visitors',
+    href: '/admin/visitors',
+    icon: Users
+  },
+  {
     name: 'Carousel',
     href: '/admin/carousel',
     icon: Images
@@ -32,11 +37,6 @@ const menus = [
     name: 'Settings',
     href: '/admin/settings',
     icon: Settings
-  },
-  {
-    name: 'Visitors',
-    href: '/admin/visitors',
-    icon: Users
   }
 ]
 
