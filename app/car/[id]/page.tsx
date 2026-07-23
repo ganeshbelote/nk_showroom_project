@@ -44,9 +44,10 @@ type Vehicle = {
     fuel: string
     transmission: string
     alternateFuel: string | null
-    alternatePrice: string | null
     petrolMileage: string | null
     cngMileage: string | null
+    hybridMileage: string | null
+    features: string[]
   }[]
 
   reviews: {
@@ -154,7 +155,11 @@ export default function CarDetailsPage () {
         }}
       />
 
-      <VariantPricing variants={vehicle.variants} />
+      <VariantPricing variants={vehicle.variants.map(v => ({
+        ...v,
+        price: `₹${Number(v.price).toLocaleString('en-IN')}`,
+        features: v.features
+      }))} />
 
       <div id='onroadprice' className='px-4 md:px-8 pb-8'>
         <OnRoadPriceSection vehicleId={vehicle.id} basePrice={Number(vehicle.basePrice)} />

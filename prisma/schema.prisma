@@ -100,13 +100,18 @@ model Variant {
 
   transmission String
 
-  // For Task 2: Alternate fuel support (e.g., CNG variant also has petrol)
+  // Alternate fuel support (e.g., CNG variant also has petrol)
   alternateFuel String?
-  alternatePrice Decimal? @db.Decimal(10, 2)
 
-  // For Task 2: Separate mileage for each fuel type in variants
+  // Separate mileage for each fuel type in variants
   petrolMileage String?
   cngMileage String?
+
+  // Hybrid mileage option
+  hybridMileage String?
+
+  // Set of features like car
+  features String[]
 
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)

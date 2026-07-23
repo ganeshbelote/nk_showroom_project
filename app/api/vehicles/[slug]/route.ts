@@ -95,9 +95,10 @@ const variantSchema = z.object({
   fuel: z.string(),
   transmission: z.string(),
   alternateFuel: z.string().nullable().optional(),
-  alternatePrice: z.coerce.number().nullable().optional(),
   petrolMileage: z.string().nullable().optional(),
-  cngMileage: z.string().nullable().optional()
+  cngMileage: z.string().nullable().optional(),
+  hybridMileage: z.string().nullable().optional(),
+  features: z.array(z.string()).optional()
 })
 
 const imageSchema = z.object({
@@ -251,9 +252,10 @@ export async function PATCH (
               fuel: v.fuel,
               transmission: v.transmission,
               alternateFuel: v.alternateFuel || null,
-              alternatePrice: v.alternatePrice || null,
               petrolMileage: v.petrolMileage || null,
-              cngMileage: v.cngMileage || null
+              cngMileage: v.cngMileage || null,
+              hybridMileage: v.hybridMileage || null,
+              features: v.features || []
             }))
           },
 

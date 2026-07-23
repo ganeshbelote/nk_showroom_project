@@ -12,9 +12,10 @@ export type VariantType = {
   fuel: string
   transmission: string
   alternateFuel?: string | null
-  alternatePrice?: number | null
   petrolMileage?: string | null
   cngMileage?: string | null
+  hybridMileage?: string | null
+  features?: string[]
 }
 
 export type ImageType = {
