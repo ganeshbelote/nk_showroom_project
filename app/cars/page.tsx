@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -288,11 +288,6 @@ export default function CarsPage () {
                         </span>
                       </div>
 
-                      {/* Compare badge
-                      <div className='absolute right-3 top-3 z-10'>
-                        <CompareBadge vehicleId={vehicle.id} />
-                      </div> */}
-
                       {/* Selected indicator */}
                       {selected && (
                         <div className='absolute inset-0 bg-[#2B3494]/10 border-2 border-[#2B3494] rounded-3xl' />
@@ -314,7 +309,7 @@ export default function CarsPage () {
                         </div>
 
                         {/* Desktop compare checkbox */}
-                        <div className='hidden md:flex flex-col items-center gap-1 ml-2'>
+                        <div className='md:flex flex-col items-center gap-1 ml-2'>
                           <CompareBadge vehicleId={vehicle.id} />
                           <span className='text-[10px] text-zinc-600'>Compare</span>
                         </div>
