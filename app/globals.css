@@ -39,6 +39,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --d-bg: 0 0% 100%;
+  --d-muted: 0 0% 90%;
+  --d-fg: 0 0% 0%;
+  --d-border: 0 0% 90%;
+  --d-sheet: 0 0% 98%;
 }
 
 body {
@@ -92,6 +97,11 @@ body {
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+  --color-d-bg: hsl(var(--d-bg));
+  --color-d-fg: hsl(var(--d-fg));
+  --color-d-border: hsl(var(--d-border));
+  --color-d-sheet: hsl(var(--d-sheet));
+  --color-d-muted: hsl(var(--d-muted));
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);

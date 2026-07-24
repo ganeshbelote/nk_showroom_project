@@ -8,7 +8,6 @@ import CarHighlights from '@/components/car-details/CarHighlights'
 import VariantPricing from '@/components/car-details/VariantPricing'
 import CarReviews from '@/components/car-details/CarReviews'
 import CompareSuggestion from '@/components/car-details/CompareSuggestion'
-import OnRoadPriceSection from '@/components/car-details/OnRoadPriceSection'
 import FullPageLoader from '@/components/FullPageLoader'
 import CarDetailsNavbar from '@/components/car-details/CarDetailsNavbar'
 
@@ -124,6 +123,7 @@ export default function CarDetailsPage () {
 
       <CarHero
         vehicleId={vehicle.id}
+        basePrice={Number(vehicle.basePrice)}
         car={{
           name: vehicle.name,
           description: vehicle.description,
@@ -164,10 +164,6 @@ export default function CarDetailsPage () {
           features: v.features
         }))}
       />
-
-      <div id='onroadprice' className='px-4 md:px-8 pb-8'>
-        <OnRoadPriceSection vehicleId={vehicle.id} basePrice={Number(vehicle.basePrice)} />
-      </div>
 
       <CarReviews reviews={vehicle.reviews} />
 

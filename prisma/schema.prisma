@@ -116,6 +116,8 @@ model Variant {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
+  onRoadPrices OnRoadPrice[]
+
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
@@ -268,6 +270,9 @@ model OnRoadPrice {
   vehicleId String
   vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
+  variantId String @default("")
+  variant   Variant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -288,5 +293,5 @@ model OnRoadPrice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([vehicleId, userId])
+  @@unique([vehicleId, userId, variantId])
 }

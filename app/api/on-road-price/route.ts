@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 const onRoadPriceSchema = z.object({
   vehicleId: z.string(),
+  variantId: z.string().optional().default(''),
   exShowroomPrice: z.coerce.number(),
   insurance: z.coerce.number(),
   rtoTax: z.coerce.number(),
@@ -20,7 +21,7 @@ const onRoadPriceSchema = z.object({
   finalOnRoadPrice: z.coerce.number()
 })
 
-// GET /api/on-road-price?vehicleId=xxx
+// GET /api/on-road-price?vehicleId=xxx&variantId=xxx
 export async function GET (req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value
@@ -31,6 +32,7 @@ export async function GET (req: NextRequest) {
 
     const { searchParams } = new URL(req.url)
     const vehicleId = searchParams.get('vehicleId')
+    const variantId = searchParams.get('variantId') || ''
 
     if (!vehicleId) {
       return NextResponse.json({ success: false, message: 'vehicleId is required' }, { status: 400 })
@@ -38,9 +40,10 @@ export async function GET (req: NextRequest) {
 
     const price = await prisma.onRoadPrice.findUnique({
       where: {
-        vehicleId_userId: {
+        vehicleId_userId_variantId: {
           vehicleId,
-          userId: payload.id
+          userId: payload.id,
+          variantId
         }
       }
     })
@@ -68,13 +71,15 @@ export async function POST (req: NextRequest) {
     }
 
     const data = result.data
+    const variantId = data.variantId || ''
 
     // Upsert: create or update
     const price = await prisma.onRoadPrice.upsert({
       where: {
-        vehicleId_userId: {
+        vehicleId_userId_variantId: {
           vehicleId: data.vehicleId,
-          userId: payload.id
+          userId: payload.id,
+          variantId
         }
       },
       update: {
@@ -94,6 +99,7 @@ export async function POST (req: NextRequest) {
       },
       create: {
         vehicleId: data.vehicleId,
+        variantId,
         userId: payload.id,
         exShowroomPrice: data.exShowroomPrice,
         insurance: data.insurance,

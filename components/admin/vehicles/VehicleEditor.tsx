@@ -450,6 +450,13 @@ export default function VehicleEditor ({ slug, onSaved }: VehicleEditorProps) {
           vehicleId={vehicleId}
           vehicleName={formData.name}
           basePrice={Number(formData.basePrice) || 0}
+          variants={formData.variants
+            .filter(v => 'id' in v && v.id)
+            .map(v => ({
+              id: (v as any).id,
+              name: v.name,
+              price: v.price
+            }))}
         />
       </div>
 
