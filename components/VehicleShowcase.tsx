@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import ColoredBtn from './ColoredBtn'
 import FullPageLoader from './FullPageLoader'
 import { useRouter } from 'next/navigation'
+import ExploreAllModelsButton from './home/ExploreAllModelsButton'
 
 export type ShowcaseVehicle = {
   id: string
@@ -219,6 +220,9 @@ export default function VehicleShowcase ({ vehicles }: Props) {
             <ArrowRight size={16} />
           </button>
         </div>
+
+        {/* Explore All Models CTA */}
+        <ExploreAllModelsButton href='/cars' />
       </div>
     </section>
   )

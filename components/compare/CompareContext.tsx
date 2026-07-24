@@ -1,16 +1,13 @@
 'use client'
 
 import { createContext, useContext, useCallback, useEffect, useState, type ReactNode } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
 import { toast } from '@/components/Toast'
 
 type CompareContextType = {
   selectedIds: string[]
-  compareMode: boolean
   toggleVehicle: (id: string) => void
   isSelected: (id: string) => boolean
   clearSelection: () => void
-  setCompareMode: (mode: boolean) => void
   count: number
 }
 
@@ -21,8 +18,6 @@ const MAX_COMPARE = 3
 
 export function CompareProvider ({ children }: { children: ReactNode }) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [compareMode, setCompareMode] = useState(false)
-  const pathname = usePathname()
 
   // Load from sessionStorage on mount
   useEffect(() => {
@@ -52,31 +47,24 @@ export function CompareProvider ({ children }: { children: ReactNode }) {
     }
   }, [selectedIds])
 
-  // Clear selection when navigating away from /cars or /compare
-  useEffect(() => {
-    const paths = ['/cars', '/compare']
-    const isRelevant = paths.some(p => pathname.startsWith(p))
-    if (!isRelevant && selectedIds.length > 0) {
-      setSelectedIds([])
-      setCompareMode(false)
-    }
-  }, [pathname])
-
   const toggleVehicle = useCallback((id: string) => {
     setSelectedIds(prev => {
       const idx = prev.indexOf(id)
       if (idx >= 0) {
-        const updated = prev.filter(x => x !== id)
-        if (updated.length === 0) setCompareMode(false)
-        return updated
+        return prev.filter(x => x !== id)
       }
       if (prev.length >= MAX_COMPARE) {
-        toast.error(`You can compare up to ${MAX_COMPARE} vehicles only.`)
         return prev
       }
       return [...prev, id]
     })
-  }, [])
+
+    // Check if we're adding and at the limit — must be outside setState updater
+    // to avoid "Cannot update a component while rendering a different component"
+    if (!selectedIds.includes(id) && selectedIds.length >= MAX_COMPARE) {
+      toast.error(`You can compare up to ${MAX_COMPARE} vehicles only.`)
+    }
+  }, [selectedIds])
 
   const isSelected = useCallback((id: string) => {
     return selectedIds.includes(id)
@@ -84,18 +72,15 @@ export function CompareProvider ({ children }: { children: ReactNode }) {
 
   const clearSelection = useCallback(() => {
     setSelectedIds([])
-    setCompareMode(false)
   }, [])
 
   return (
     <CompareContext.Provider
       value={{
         selectedIds,
-        compareMode,
         toggleVehicle,
         isSelected,
         clearSelection,
-        setCompareMode,
         count: selectedIds.length
       }}
     >

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useState, useCallback } from 'react'
+import { createContext, useState, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 export type ToastType = {
@@ -19,6 +19,8 @@ const ToastContext = createContext<ToastContextType | null>(null)
 // external reference for toast.* functions
 let addToastExternal: ToastContextType['addToast']
 
+let toastIdCounter = 0
+
 export const Toast = ({
   position = 'top-right',
   duration = 3000
@@ -34,7 +36,7 @@ export const Toast = ({
 
   const addToast = useCallback(
     (message: string, type: ToastType['type']) => {
-      const id = Date.now()
+      const id = ++toastIdCounter
       setToasts(prev => [...prev, { id, message, type }])
 
       // Auto remove after duration
@@ -43,8 +45,11 @@ export const Toast = ({
     [duration, removeToast]
   )
 
-  // Expose to external toast functions
-  addToastExternal = addToast
+  // Expose to external toast functions — must be in useEffect to avoid
+  // "Cannot update a component while rendering a different component" errors
+  useEffect(() => {
+    addToastExternal = addToast
+  }, [addToast])
 
   return (
     <ToastContext.Provider value={{ addToast, removeToast }}>

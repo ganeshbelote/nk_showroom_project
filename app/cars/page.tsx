@@ -8,7 +8,6 @@ import { Search, SlidersHorizontal, Fuel, Gauge, Settings2, X } from 'lucide-rea
 import { motion } from 'framer-motion'
 import { useCompare } from '@/components/compare/CompareContext'
 import CompareBadge from '@/components/compare/CompareBadge'
-import { useLongPress } from '@/hooks/useLongPress'
 
 type Vehicle = {
   id: string
@@ -85,16 +84,7 @@ export default function CarsPage () {
 
   const hasActiveFilters = selectedFuel || selectedBody || selectedTransmission || search
 
-  const { isSelected, toggleVehicle, compareMode, setCompareMode, count } = useCompare()
-
-  function handleCardClick (e: React.MouseEvent, slug: string, id: string) {
-    if (compareMode) {
-      e.preventDefault()
-      toggleVehicle(id)
-      return
-    }
-    // normal navigation via Link
-  }
+  const { isSelected, toggleVehicle, count } = useCompare()
 
   return (
     <main className='min-h-screen bg-black'>
@@ -210,25 +200,6 @@ export default function CarsPage () {
           <p className='mt-6 text-center text-sm text-zinc-500'>
             {loading ? 'Loading...' : `${filtered.length} vehicle${filtered.length !== 1 ? 's' : ''} found`}
           </p>
-
-          {/* Compare mode indicator */}
-          {compareMode && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className='mt-4 flex items-center justify-center gap-3'
-            >
-              <span className='text-sm text-indigo-400'>
-                Tap vehicle cards to select for comparison ({count}/3 selected)
-              </span>
-              <button
-                onClick={() => setCompareMode(false)}
-                className='rounded-lg border border-zinc-700 px-3 py-1 text-xs text-zinc-400 hover:text-white transition'
-              >
-                Cancel
-              </button>
-            </motion.div>
-          )}
         </div>
       </div>
 
@@ -294,18 +265,10 @@ export default function CarsPage () {
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
                   <Link
-                    href={compareMode ? '#' : `/car/${vehicle.slug}`}
-                    onClick={(e) => {
-                      if (compareMode) {
-                        e.preventDefault()
-                        toggleVehicle(vehicle.id)
-                      }
-                    }}
+                    href={`/car/${vehicle.slug}`}
                     className={`group relative overflow-hidden rounded-3xl border transition block ${
                       selected
                         ? 'border-[#2B3494] ring-2 ring-[#2B3494]/50'
-                        : compareMode
-                        ? 'border-indigo-800/30 hover:border-indigo-600'
                         : 'border-zinc-800 hover:border-[#2B3494]'
                     } bg-zinc-950`}
                   >
@@ -325,10 +288,10 @@ export default function CarsPage () {
                         </span>
                       </div>
 
-                      {/* Compare badge */}
+                      {/* Compare badge
                       <div className='absolute right-3 top-3 z-10'>
                         <CompareBadge vehicleId={vehicle.id} />
-                      </div>
+                      </div> */}
 
                       {/* Selected indicator */}
                       {selected && (
@@ -384,7 +347,7 @@ export default function CarsPage () {
                       </div>
 
                       <div className='mt-4 flex h-11 items-center justify-center rounded-xl bg-[#2B3494] font-semibold text-white transition group-hover:bg-indigo-800'>
-                        {compareMode ? 'Select to Compare' : 'View Details'}
+                        View Details
                       </div>
                     </div>
                   </Link>

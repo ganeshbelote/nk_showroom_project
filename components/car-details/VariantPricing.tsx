@@ -5,6 +5,7 @@ import { Circle, Fuel, Gauge, Check, ScrollText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface Variant {
+  id: string
   name: string
   fuel: string
   transmission: string
@@ -17,9 +18,10 @@ interface Variant {
 
 interface Props {
   variants: Variant[]
+  vehicleId: string
 }
 
-export default function VariantPricing ({ variants }: Props) {
+export default function VariantPricing ({ variants, vehicleId }: Props) {
   const router = useRouter()
   const [fuel, setFuel] = useState('All')
   const [transmission, setTransmission] = useState('All')
@@ -189,7 +191,7 @@ export default function VariantPricing ({ variants }: Props) {
               </div>
             </div>
 
-            <div className='mt-5 border-t border-zinc-800 pt-5'>
+            <div className='mt-5 border-t border-zinc-800 pt-5 space-y-3'>
               <button
                 className='w-full rounded-xl bg-[#2B3494] py-3 font-semibold text-white transition hover:bg-indigo-800'
                 onClick={() => router.push('/dealer')}

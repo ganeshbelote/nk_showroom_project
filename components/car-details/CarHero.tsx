@@ -10,9 +10,12 @@ import {
   Fuel,
   Gauge,
   Settings2,
-  Users
+  Users,
+  Plus,
+  Minus
 } from 'lucide-react'
 import { toast } from '@/components/Toast'
+import { useCompare } from '@/components/compare/CompareContext'
 
 interface Car {
   name: string
@@ -39,6 +42,8 @@ interface Props {
 
 export default function CarHero ({ car, vehicleId }: Props) {
   const router = useRouter()
+  const { isSelected, toggleVehicle } = useCompare()
+  const thisCarSelected = isSelected(vehicleId)
   const [selectedImage, setSelectedImage] = useState(
     car.images.find(img => img.isCover)?.imageUrl ??
       car.images[0]?.imageUrl ??
@@ -195,6 +200,22 @@ export default function CarHero ({ car, vehicleId }: Props) {
 
             <span className='text-zinc-400'>({car.reviews} Reviews)</span>
           </div>
+
+          {/* Compare toggle button — right next to rating */}
+          <button
+            onClick={() => toggleVehicle(vehicleId)}
+            className={`ml-auto rounded-xl border-2 px-4 py-1.5 text-sm font-medium transition flex items-center gap-1.5 ${
+              thisCarSelected
+                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                : 'border-zinc-700 text-zinc-400 hover:border-indigo-500 hover:text-indigo-400'
+            }`}
+          >
+            {thisCarSelected ? (
+              <><Minus size={14} /> Remove Compare</>
+            ) : (
+              <><Plus size={14} /> Add Compare</>
+            )}
+          </button>
         </div>
 
         <h1 className='mt-5 text-4xl font-bold text-white lg:text-5xl'>
